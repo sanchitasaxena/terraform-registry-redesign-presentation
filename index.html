@@ -168,7 +168,7 @@
 <body>
   <main class="app">
     <div class="stage" aria-label="Terraform Registry presentation">
-      <section class="slide dark title-slide active" aria-label="Slide 1 of 13">
+      <section class="slide dark title-slide active" aria-label="Slide 1 of 13" data-lead="Sanchita" data-duration="45">
         <svg class="title-art" viewBox="0 0 320 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <path fill="#262626" d="M0 0h320v640H0z"></path>
           <path fill="#0f62fe" d="M0 0h160v160H0zM160 320h160v160H160z"></path>
@@ -184,10 +184,10 @@
             <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Opening · 45 seconds</h2><p><strong>Sanchita:</strong> We’re sharing a way of working, not an AI success formula. The Registry gives us a concrete example of how shared context, direct collaboration, and AI-assisted iteration helped us move work forward.</p><p><strong>Val:</strong> We’ll show what shipped, how the working loop changed, and what we’re still figuring out. We’ve left room for your questions.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Opening · 45 seconds</h2><p><strong>Sanchita:</strong> Open with the promise: a way of working, not an AI success formula. Introduce both presenters, what shipped, and what we’re still figuring out. Shared context, direct collaboration, and AI-assisted iteration helped us move Registry work forward.</p><p><strong>Handoff to Val:</strong> “Here’s the loop we built together.” The twelve content slides are split evenly: Sanchita leads 1, 3, 5, 6, 11, and 12; Val leads 2, 4, 7, 8, 9, and 10. Each has 7 minutes 15 seconds of planned lead time. Brief contributions from the other presenter fit inside each slide’s allocation; rehearse to keep actual speaking time balanced. Discussion is shared.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 2 of 13">
+      <section class="slide dark" aria-label="Slide 2 of 13" data-lead="Val" data-duration="30">
           <div class="diagram-visual">
             <svg class="cover-loop" viewBox="0 0 540 440" role="img" aria-labelledby="cover-loop-title cover-loop-description">
               <title id="cover-loop-title">Our Design and Engineering feedback loop</title>
@@ -219,10 +219,10 @@
               <text class="loop-center" x="270" y="239" text-anchor="middle">Distinct expertise.</text>
             </svg>
           </div>
-        <aside class="speaker-notes" hidden><h2>Our collaboration loop · 45 seconds</h2><p><strong>Sanchita:</strong> I bring the user goal and a prototype or interaction to discuss. Val explores implementation with existing code, AI, and HDS patterns.</p><p><strong>Val:</strong> Constraints become options we evaluate together against the UX goal. Team review and checks help us refine before shipping. Feedback informs the next iteration; this isn’t a one-way handoff.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Our collaboration loop · 30 seconds</h2><p><strong>Val:</strong> Guide the audience around the diagram. Sanchita brings the user goal and a prototype or interaction. I explore implementation with existing code, AI, and HDS patterns. Constraints become options we evaluate together against the UX goal. Team review and checks help us refine before shipping; feedback informs the next iteration.</p><p><strong>Handoff to Sanchita:</strong> “First, the product context that makes those decisions meaningful.”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 3 of 13">
+      <section class="slide" aria-label="Slide 3 of 13" data-lead="Sanchita" data-duration="75">
         <h2>Two registries. One coherent experience.</h2>
         <div class="content center">
           <div class="two-up">
@@ -231,10 +231,10 @@
           </div>
           <p class="caption small muted">Shared patterns. Distinct consumer and producer workflows.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Public Registry supports discovery and publishing. Private Registry helps organizations scale reuse and govern artifacts. Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent. The public module listing was captured from registry.terraform.io/browse/modules for this comparison.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Product context · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Public Registry supports discovery and publishing. Private Registry helps organizations scale reuse and govern artifacts. Consumers need to find and use trusted artifacts; producers need to publish and maintain them. Explain how the work clarified those distinct jobs while making the public and private experiences more consistent. The public module listing was captured from registry.terraform.io/browse/modules for this comparison.</p><p><strong>Handoff to Val:</strong> “That consistency depended on investments in an existing product, not a blank slate.”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 4 of 13">
+      <section class="slide" aria-label="Slide 4 of 13" data-lead="Val" data-duration="45">
         <h2>Small investments built on each other.</h2>
         <div class="content center">
           <div class="timeline">
@@ -245,10 +245,10 @@
           </div>
           <p class="caption small muted">Overlapping workstreams—not one sprint.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Timeline · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed incrementally alongside feature work. The public reskin was a focused effort of under two weeks—not the timeline for the whole partnership.</p><p><strong>Val:</strong> Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Avoid naming dates or phases we haven’t verified.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Timeline · 45 seconds</h2><p><strong>Val:</strong> Explain the technical foundation behind the delivery arc. Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed alongside roadmap work; the focused public reskin took under two weeks, not the entire partnership.</p><p>Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Confirm the sequence from Engineering’s perspective and avoid dates or phases we haven’t verified. <strong>Handoff to Sanchita:</strong> “Here’s what that investment produced for the product and customers.”</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 5 of 13">
+      <section class="slide tint" aria-label="Slide 5 of 13" data-lead="Sanchita" data-duration="90">
         <h2>More than a reskin.</h2>
         <div class="content impact">
           <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p></div>
@@ -258,10 +258,10 @@
             <div class="fact"><strong>Foundation</strong><p>Bulma removed. Preparing for Solar + dark mode.</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Results · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> The under-two-week figure applies to the focused public reskin. Across a longer period we also shipped private-screen redesigns and Artifact Usage and Visibility Controls. Developer advocates use the controls as part of the HCP Terraform value story. The work contributed to a customer renewal and resolving escalations; don’t claim it was the sole cause.</p><p><strong>Val:</strong> Bulma removal is complete; preparation for Project Solar and dark mode is not the same as claiming either has shipped.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Results · 1 minute 30 seconds</h2><p><strong>Sanchita:</strong> The under-two-week figure applies to the focused public reskin. Across a longer period we also shipped private-screen redesigns and Artifact Usage and Visibility Controls. Developer advocates use the controls as part of the HCP Terraform value story. The work contributed to a customer renewal and resolving escalations; don’t claim it was the sole cause.</p><p>Connect customer outcomes to product scope without attributing all delivery speed to AI. Bulma removal is complete; preparation for Project Solar and dark mode is not the same as claiming either has shipped. Val will lead the technical direction on slide 10.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 6 of 13">
+      <section class="slide tint" aria-label="Slide 6 of 13" data-lead="Sanchita" data-duration="75">
         <h2>Bring decisions closer to the work.</h2>
         <div class="content center">
           <div class="loop">
@@ -272,10 +272,10 @@
           </div>
           <p class="statement">AI accelerates iteration. <strong>People own the judgment.</strong></p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Rather than waiting until every detail is fully specified, bring intent and the interaction into a shared conversation early. The public and private efforts used different design methods; this is the common collaboration pattern, not a claim that every project followed the same steps.</p><p><strong>Val:</strong> Engineering tests feasibility, suggests alternatives, and reviews the resulting implementation. AI can accelerate iteration, but it does not decide the right UX or remove review and testing.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Explain what changed in your design practice: bring intent and the interaction into a shared conversation early, evaluate feasible alternatives, and stay involved through implementation. The public and private efforts used different methods; this is their common collaboration pattern, not a claim that every project followed identical steps.</p><p>Engineering tests feasibility, suggests alternatives, and reviews the implementation. AI accelerates iteration but does not decide UX or remove review and testing. <strong>Handoff to Val:</strong> “Show how that works inside your engineering environment.”</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 7 of 13">
+      <section class="slide dark" aria-label="Slide 7 of 13" data-lead="Val" data-duration="150">
         <h2>Inside the AI-assisted workflow.</h2>
         <div class="content engineering">
           <div class="engineering-list">
@@ -290,10 +290,10 @@
             <p class="terminal-line"><span>03</span> Review &amp; checks</p>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val’s setup and workflow · 2 minutes 30 seconds</h2><p><strong>Val leads:</strong> Show your actual VS Code and GitHub Copilot setup, what context you provide, and how that context relates to existing Registry and HDS patterns. Explain the process in your own words rather than implying an unverified configuration.</p><p>Walk through a real task: the input, the first output, what you reviewed or corrected, and the checks before code was ready. A sanitized prompt, diff, or screen recording would make this tangible; choose one you’re comfortable sharing. Say what accelerated and what remained your responsibility. No invented measurements or agent discoveries.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Setup and workflow · 2 minutes 30 seconds</h2><p><strong>Val leads:</strong> Show your actual VS Code and GitHub Copilot setup, what context you provide, and how that context relates to existing Registry and HDS patterns. Explain the process in your own words rather than implying an unverified configuration.</p><p>Walk through a real task: the input, the first output, what you reviewed or corrected, and the checks before code was ready. A sanitized prompt, diff, or screen recording would make this tangible; choose one you’re comfortable sharing. Say what accelerated and what remained your responsibility. No invented measurements or agent discoveries.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 8 of 13">
+      <section class="slide" aria-label="Slide 8 of 13" data-lead="Val" data-duration="90">
         <h2>Make it a team practice.</h2>
         <div class="content center">
           <div class="three-up">
@@ -302,10 +302,10 @@
             <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep useful practices. Surface friction.</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 9 of 13">
+      <section class="slide tint" aria-label="Slide 9 of 13" data-lead="Val" data-duration="75">
         <h2>Make validation part of the loop.</h2>
         <div class="content center">
           <div class="three-up">
@@ -314,10 +314,10 @@
             <div class="panel"><span class="pill">Follow through</span><h3>Triage + recheck</h3><p class="small">Owners, fixes, and open risks</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val’s testing and bug-bash walkthrough · 1 minute 15 seconds</h2><p><strong>Val leads:</strong> Complete this section with the team’s actual testing process. The three steps are draft framing to confirm, not a verified description of the current release process. Explain what happens before, during, and after a bug bash; who participates; and how findings feed back into implementation.</p><p>Bring one reviewed example or the reusable tracker if useful. Distinguish automated checks, manual testing, and UX review. Explain what has changed and what still needs work without inventing time savings, coverage, or defect-reduction metrics. The validation workspace later in the deck is something people can try, not evidence that every team has adopted it.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Testing and bug bashes · 1 minute 15 seconds</h2><p><strong>Val leads:</strong> Complete this section with the team’s actual testing process. The three steps are draft framing to confirm, not a verified description of the current release process. Explain what happens before, during, and after a bug bash; who participates; and how findings feed back into implementation.</p><p>Bring one reviewed example or the reusable tracker if useful. Distinguish automated checks, manual testing, and UX review. Explain what has changed and what still needs work without inventing time savings, coverage, or defect-reduction metrics. The validation workspace later in the deck is something people can try, not evidence that every team has adopted it.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 10 of 13">
+      <section class="slide" aria-label="Slide 10 of 13" data-lead="Val" data-duration="45">
         <h2>Leave the product stronger.</h2>
         <div class="content center">
           <div class="three-up">
@@ -327,10 +327,10 @@
           </div>
           <p class="caption small muted">Versions list shipped. Future technical changes under discussion.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Scope and direction · 1 minute</h2><p><strong>Sanchita:</strong> Usage and Visibility Controls have shipped. Ownership is a discovery effort, not a committed delivery date. Explain how those controls support a broader governance direction without implying that the model is complete.</p><p><strong>Val:</strong> Discuss the versions list, the removal of Bulma, and one technical conversation that looks beyond the immediate project if useful. Separate future requests from committed work.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Val leads · Technical direction · 45 seconds</h2><p><strong>Val:</strong> Explain what the versions list, Bulma removal, and Solar preparation mean for the technical foundation. Add one concrete engineering decision or future technical question if useful. Usage and Visibility Controls have shipped; Ownership remains technical discovery, not a committed delivery date. Separate future requests from committed work.</p><p><strong>Handoff to Sanchita:</strong> “What should others take away from working this way?”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 11 of 13">
+      <section class="slide" aria-label="Slide 11 of 13" data-lead="Sanchita" data-duration="90">
         <h2>The loop matters. Not just the tool.</h2>
         <div class="content center">
           <div class="takeaways">
@@ -339,10 +339,10 @@
             <div class="takeaway"><b>03</b><div><h3>Keep questioning the workflow.</h3><p class="small">Still learning: context, verification, adoption</p></div></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Lessons · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Explain the value of bringing the user goal and a concrete interaction into the conversation early, and how Design remained involved through implementation.</p><p><strong>Val:</strong> Explain the engineering judgment and checks that still matter. Share one limitation or open question from your actual experience: for example, what context is worth maintaining or when reviewing generated output takes more effort. Do not invent a failure or measured speedup.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Lessons · 1 minute 30 seconds</h2><p><strong>Sanchita:</strong> Synthesize the lessons across both crafts: early context, review while decisions are flexible, and continued learning. Explain how Design stayed involved through implementation and what you changed in your own approach.</p><p>Include one honest limitation or open question from your own experience. Val can add a brief engineering counterpoint, such as context maintenance or the effort of reviewing generated output. This fits inside the slide’s allocation; keep the speaking split balanced across the talk. Do not invent a failure or measured speedup.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 12 of 13">
+      <section class="slide tint" aria-label="Slide 12 of 13" data-lead="Sanchita" data-duration="60">
         <h2>A validation workspace you can borrow.</h2>
         <div class="content center">
           <div class="three-up">
@@ -356,15 +356,15 @@
           </div>
           <p class="caption small muted">Drafting support—not automated product testing or release approval.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Something to borrow · 45 seconds</h2><p><strong>Sanchita:</strong> Offer the Product Validation Copilot Workspace as a reusable starting point. Its QA workflow accepts local Markdown, text, or Word PRDs/RFCs and generates draft functional scenarios and an XLSX tracker with Scenarios, Bug Tracker, Summary, and Validation sheets. The linked example uses synthetic inputs and includes a sample workbook.</p><p><strong>Val:</strong> Engineering must review source-derived scenarios before a live bug bash. Generating a tracker does not run product tests, establish coverage, or decide release readiness. This is a local CLI toolkit with Copilot prompts, not a hosted application; the README explains Python dependencies and the officecli requirement for Word workflows. Start with synthetic or approved inputs and review outputs before sharing. Do not imply this toolkit was used for earlier shipped Registry work unless confirmed.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Sanchita leads · Something to borrow · 1 minute</h2><p><strong>Sanchita:</strong> Offer the Product Validation Copilot Workspace as a reusable starting point. Its QA workflow accepts local Markdown, text, or Word PRDs/RFCs and generates draft functional scenarios and an XLSX tracker with Scenarios, Bug Tracker, Summary, and Validation sheets. Point to the synthetic example and sample workbook as an easy place to start.</p><p>Engineering must review source-derived scenarios before a live bug bash. Generating a tracker does not run product tests, establish coverage, or decide release readiness. This is a local CLI toolkit with Copilot prompts, not a hosted application; the README explains Python dependencies and the officecli requirement for Word workflows. Start with synthetic or approved inputs and review outputs before sharing. Do not imply it was used for earlier shipped work unless confirmed. Invite questions to both presenters.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 13 of 13">
+      <section class="slide dark" aria-label="Slide 13 of 13" data-lead="Shared">
         <div class="content center">
           <h1>What could your team<br>try together?</h1>
           <p class="discussion">Earlier context? Shared review? AI-assisted iteration?</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Discussion · 3–5 minutes</h2><p>Invite questions about the product work, Val’s setup, team adoption, bug bashes, or the reusable validation workspace. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Suggested spoken portion: approximately 14 minutes 30 seconds; with 3–5 minutes of discussion, allow roughly 18–20 minutes total. For a shorter slot, summarize the timeline and product-direction slides and shorten the walkthrough. Confirm the testing section with Val before presenting it as the team’s current process.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Shared discussion · 3–5 minutes</h2><p>Both presenters answer from their own experience. Invite questions about the product work, Val’s setup, team adoption, bug bashes, or the reusable validation workspace. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Six content slides per presenter, with 7 minutes 15 seconds of planned lead time each: 14 minutes 30 seconds total, plus 3–5 minutes of shared discussion. Allow roughly 18–20 minutes overall. Rehearse handoffs and balance actual speaking time; a slide’s lead owns its story rather than just opening it. Shorten both presenters’ allocations proportionally for a shorter slot. Confirm the testing section with Val before presenting it as the team’s current process.</p></aside>
       </section>
     </div>
     <nav class="controls" aria-label="Presentation controls">
