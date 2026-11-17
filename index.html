@@ -59,10 +59,15 @@
     .dark > h2 { border-color: #525252; }
     .title-slide { isolation: isolate; }
     .title-content { width: 61%; position: relative; z-index: 1; }
-    .title-art { position: absolute; inset: 0 0 0 auto; width: 33%; height: 100%; pointer-events: none; }
+    .title-art { position: absolute; inset: 0 0 0 auto; width: 42%; height: 100%; pointer-events: none; }
     .cover-title { max-width: 10ch; font-size: clamp(40px, 6.2vw, 90px); line-height: 1; }
     .cover-subtitle { max-width: 30ch; margin-top: 6%; color: #c6c6c6; font-size: clamp(16px, 1.7vw, 25px); }
     .cover-byline { margin-top: 9%; padding-top: 4%; border-top: 1px solid #525252; color: #c6c6c6; }
+    .presenter-label { position: absolute; bottom: 3%; left: 5.3%; z-index: 2; color: var(--muted); font: 400 clamp(9px, .8vw, 12px)/1.2 var(--mono); letter-spacing: .04em; }
+    .dark .presenter-label { color: #a8a8a8; }
+    .closing-art { width: 32%; }
+    .closing-content { position: relative; z-index: 1; width: 66%; }
+    .closing-content h1 { font-size: clamp(32px, 4.6vw, 68px); }
     .diagram-visual { flex: 1; min-height: 0; display: grid; place-items: center; }
     .cover-loop { width: 100%; height: 100%; max-width: 740px; min-height: 0; }
     .cover-loop .loop-node { fill: #262626; stroke: #78a9ff; stroke-width: 1.5; }
@@ -141,8 +146,9 @@
       .slide { min-height: calc(100vh - 58px); height: auto; padding: 28px 24px 65px; overflow: visible; }
       .slide > h2 { margin-bottom: 20px; }
       .content { min-height: 0; }
-      .title-content { width: 100%; }
+      .title-content, .closing-content { width: 100%; }
       .title-art { width: 46%; opacity: .16; }
+      .presenter-label { bottom: 24px; left: 24px; }
       .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
       .diagram-visual { flex: none; }
       .cover-loop { height: auto; }
@@ -169,13 +175,29 @@
   <main class="app">
     <div class="stage" aria-label="Terraform Registry presentation">
       <section class="slide dark title-slide active" aria-label="Slide 1 of 13" data-lead="Sanchita" data-duration="45">
-        <svg class="title-art" viewBox="0 0 320 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-          <path fill="#262626" d="M0 0h320v640H0z"></path>
-          <path fill="#0f62fe" d="M0 0h160v160H0zM160 320h160v160H160z"></path>
-          <path fill="#0043ce" d="M160 0h160v320H160zM0 480h320v160H0z"></path>
-          <path fill="#4589ff" d="M0 160h160v160H0zM0 480h160v160H0z"></path>
-          <path fill="none" stroke="#78a9ff" stroke-width="1" d="M0 160h320M0 320h320M0 480h320M160 0v640"></path>
-          <path fill="none" stroke="#fff" stroke-width="2" d="M40 80h200v320H80v160M220 380l20 20 20-20M60 540l20 20 20-20"></path>
+        <svg class="title-art" viewBox="0 0 440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="cover-design-thread" d="M130-80V100C130 220 330 210 330 320S130 420 130 540V720"></path>
+            <path id="cover-engineering-thread" d="M310-80V100C310 220 110 210 110 320S310 420 310 540V720"></path>
+          </defs>
+          <g fill="none" stroke="#4589ff" stroke-width="1.5">
+            <use href="#cover-design-thread" transform="translate(-36)"></use>
+            <use href="#cover-design-thread" transform="translate(-24)"></use>
+            <use href="#cover-design-thread" transform="translate(-12)"></use>
+            <use href="#cover-design-thread"></use>
+            <use href="#cover-design-thread" transform="translate(12)"></use>
+            <use href="#cover-design-thread" transform="translate(24)"></use>
+            <use href="#cover-design-thread" transform="translate(36)"></use>
+          </g>
+          <g fill="none" stroke="#a6c8ff" stroke-width="1.5">
+            <use href="#cover-engineering-thread" transform="translate(-36)"></use>
+            <use href="#cover-engineering-thread" transform="translate(-24)"></use>
+            <use href="#cover-engineering-thread" transform="translate(-12)"></use>
+            <use href="#cover-engineering-thread"></use>
+            <use href="#cover-engineering-thread" transform="translate(12)"></use>
+            <use href="#cover-engineering-thread" transform="translate(24)"></use>
+            <use href="#cover-engineering-thread" transform="translate(36)"></use>
+          </g>
         </svg>
         <div class="content center title-content">
           <div>
@@ -360,7 +382,23 @@
       </section>
 
       <section class="slide dark" aria-label="Slide 13 of 13" data-lead="Shared">
-        <div class="content center">
+        <svg class="title-art closing-art" viewBox="0 0 440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="closing-thread" d="M470 130H260C50 130 50 510 260 510H470"></path>
+          </defs>
+          <g fill="none" stroke="#4589ff" stroke-width="1.5">
+            <use href="#closing-thread" transform="translate(0 -36)"></use>
+            <use href="#closing-thread" transform="translate(0 -24)"></use>
+            <use href="#closing-thread" transform="translate(0 -12)"></use>
+          </g>
+          <g fill="none" stroke="#a6c8ff" stroke-width="1.5">
+            <use href="#closing-thread"></use>
+            <use href="#closing-thread" transform="translate(0 12)"></use>
+            <use href="#closing-thread" transform="translate(0 24)"></use>
+            <use href="#closing-thread" transform="translate(0 36)"></use>
+          </g>
+        </svg>
+        <div class="content center closing-content">
           <h1>What could your team<br>try together?</h1>
           <p class="discussion">Earlier context? Shared review? AI-assisted iteration?</p>
         </div>
@@ -387,6 +425,13 @@
   <script>
     (() => {
       const slides = [...document.querySelectorAll(".slide")];
+      const presenterLabels = { Sanchita: "Design", Val: "Engineering", Shared: "Together" };
+      slides.forEach(slide => {
+        const label = document.createElement("span");
+        label.className = "presenter-label";
+        label.textContent = presenterLabels[slide.dataset.lead];
+        slide.append(label);
+      });
       const notesMode = new URLSearchParams(location.search).has("notes");
       const previous = document.getElementById("previous");
       const next = document.getElementById("next");
