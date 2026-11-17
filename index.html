@@ -76,7 +76,15 @@
     .cover-subtitle { max-width: 31ch; margin-top: 5%; color: #d7d2df; font-size: clamp(16px, 1.7vw, 25px); }
     .cover-byline { margin-top: 8%; color: #c1bacb; }
     .cover-visual { position: relative; align-self: stretch; display: grid; place-items: center; }
-    .cover-visual::before { content: ""; position: absolute; width: 86%; aspect-ratio: 1; border-radius: 50%; background: #5c36bd; filter: blur(1px); }
+    .cover-visual::before {
+      content: "";
+      position: absolute;
+      width: 86%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 22%, #d2baff 0%, #9968ed 27%, #6339bd 54%, #35234e 78%, #17151e 100%);
+      filter: blur(3px);
+    }
     .cover-visual img { position: relative; width: 100%; max-height: 62%; object-fit: cover; object-position: top; border: 1px solid #9891a5; box-shadow: 0 20px 50px #09070f80; }
     .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; align-items: start; }
     .screen { min-width: 0; }
@@ -176,7 +184,7 @@
         <div class="content split">
           <div>
             <h1 class="cover-title">A faster feedback loop.</h1>
-            <p class="cover-subtitle">How we moved two registries forward—together, with AI in the loop.</p>
+            <p class="cover-subtitle">Two registries. Shared craft. AI in the loop.</p>
             <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
           <div class="cover-visual"><img src="images/Public%20registry.png" alt="The redesigned public Terraform Registry"></div>
@@ -187,13 +195,13 @@
 
       <section class="slide" aria-label="Slide 2 of 10">
         <p class="eyebrow">The product context</p>
-        <h2>Two registries. Different jobs. A more coherent experience.</h2>
+        <h2>Two registries. One coherent experience.</h2>
         <div class="content center">
           <div class="two-up">
             <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Discover + publish</span></div><img src="images/Public%20registry.png" alt="Redesigned public Registry landing page"></div>
             <div class="screen"><div class="screen-label"><span>Private Registry</span><span class="muted">Use + govern</span></div><img src="images/Private%20Library.png" alt="Private Registry library showing modules"></div>
           </div>
-          <p class="caption small muted">Shared patterns across public and private surfaces; clearer workflows for consumers and producers.</p>
+          <p class="caption small muted">Shared patterns. Distinct consumer and producer workflows.</p>
         </div>
         <div class="footer"><span>Set the context</span><span>02</span></div>
         <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
@@ -204,12 +212,12 @@
         <h2>Small investments built on each other.</h2>
         <div class="content center">
           <div class="timeline">
-            <div class="timeline-item"><div class="number">01</div><h3>Make the case</h3><p class="small">UX debt, research, and a workshop helped make the case for technical investment.</p></div>
-            <div class="timeline-item"><div class="number">02</div><h3>Build the foundation</h3><p class="small">A dedicated technical-debt quarter and private Registry redesigns alongside roadmap work.</p></div>
-            <div class="timeline-item"><div class="number">03</div><h3>Ship &amp; extend</h3><p class="small">A focused public reskin in under two weeks; Usage and Visibility Controls shipped.</p></div>
-            <div class="timeline-item"><div class="number">04</div><h3>Keep moving</h3><p class="small">Ownership Control is in technical discovery; Solar preparation is underway.</p></div>
+            <div class="timeline-item"><div class="number">01</div><h3>Make the case</h3><p class="small">UX debt → research → workshop</p></div>
+            <div class="timeline-item"><div class="number">02</div><h3>Build the foundation</h3><p class="small">Technical-debt quarter + private redesigns</p></div>
+            <div class="timeline-item"><div class="number">03</div><h3>Ship &amp; extend</h3><p class="small">Public reskin + Usage &amp; Visibility Controls</p></div>
+            <div class="timeline-item"><div class="number">04</div><h3>Keep moving</h3><p class="small">Ownership discovery + Solar preparation</p></div>
           </div>
-          <p class="caption small muted">A sequence, not a single sprint or a claim that every stream happened one after another.</p>
+          <p class="caption small muted">Overlapping workstreams—not one sprint.</p>
         </div>
         <div class="footer"><span>Foundation → delivery → next questions</span><span>03</span></div>
         <aside class="speaker-notes" hidden><h2>Timeline · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed incrementally alongside feature work. The public reskin was a focused effort of under two weeks—not the timeline for the whole partnership.</p><p><strong>Val:</strong> Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Avoid naming dates or phases we haven’t verified.</p></aside>
@@ -219,11 +227,11 @@
         <p class="eyebrow">What the work produced</p>
         <h2>More than a reskin.</h2>
         <div class="content impact">
-          <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p><p class="small muted" style="margin-top:16px">Not the duration of the entire redesign or roadmap.</p></div>
+          <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p></div>
           <div class="facts">
-            <div class="fact"><strong>Shipped</strong><p>Private-screen redesigns, Usage and Visibility Controls, and a public redesign.</p></div>
-            <div class="fact"><strong>Customer value</strong><p>Developer advocates use the controls to communicate HCP Terraform value; the work supported a renewal and escalation resolution.</p></div>
-            <div class="fact"><strong>Foundation</strong><p>Bulma removed; public and private Registry prepared for Project Solar and dark mode.</p></div>
+            <div class="fact"><strong>Shipped</strong><p>Registry redesigns + Usage &amp; Visibility Controls</p></div>
+            <div class="fact"><strong>Customer value</strong><p>Supported a renewal, escalation resolution, and developer advocacy</p></div>
+            <div class="fact"><strong>Foundation</strong><p>Bulma removed. Preparing for Solar + dark mode.</p></div>
           </div>
         </div>
         <div class="footer"><span>Delivery and outcomes · not an AI-only claim</span><span>04</span></div>
@@ -232,15 +240,15 @@
 
       <section class="slide tint" aria-label="Slide 5 of 10">
         <p class="eyebrow">The working method</p>
-        <h2>We brought decisions closer to the work.</h2>
+        <h2>Bring decisions closer to the work.</h2>
         <div class="content center">
           <div class="loop">
-            <div class="loop-step"><span class="number">01</span><h3>Make intent concrete</h3><p class="small">Design brings the user goal, context, and an interaction to discuss.</p></div>
-            <div class="loop-step"><span class="number">02</span><h3>Explore in code</h3><p class="small">Engineering works with existing patterns and AI-assisted iteration.</p></div>
-            <div class="loop-step"><span class="number">03</span><h3>Review together</h3><p class="small">Constraints and alternatives meet UX judgment in the same conversation.</p></div>
-            <div class="loop-step"><span class="number">04</span><h3>Decide &amp; ship</h3><p class="small">Refine, review, test, and move work forward incrementally.</p></div>
+            <div class="loop-step"><span class="number">01</span><h3>Make intent concrete</h3><p class="small">User goal + interaction</p></div>
+            <div class="loop-step"><span class="number">02</span><h3>Explore in code</h3><p class="small">Existing patterns + AI</p></div>
+            <div class="loop-step"><span class="number">03</span><h3>Review together</h3><p class="small">Constraints + alternatives</p></div>
+            <div class="loop-step"><span class="number">04</span><h3>Decide &amp; ship</h3><p class="small">Refine → review → test</p></div>
           </div>
-          <p class="statement">AI helps us iterate. <strong>People still own the judgment.</strong></p>
+          <p class="statement">AI accelerates iteration. <strong>People own the judgment.</strong></p>
         </div>
         <div class="footer"><span>Shared loop · distinct craft expertise</span><span>05</span></div>
         <aside class="speaker-notes" hidden><h2>Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Rather than waiting until every detail is fully specified, bring intent and the interaction into a shared conversation early. The public and private efforts used different design methods; this is the common collaboration pattern, not a claim that every project followed the same steps.</p><p><strong>Val:</strong> Engineering tests feasibility, suggests alternatives, and reviews the resulting implementation. AI can accelerate iteration, but it does not decide the right UX or remove review and testing.</p></aside>
@@ -248,18 +256,18 @@
 
       <section class="slide dark" aria-label="Slide 6 of 10">
         <p class="eyebrow">Engineering-led · workflow</p>
-        <h2>What makes the AI-assisted loop useful?</h2>
+        <h2>Inside the AI-assisted workflow.</h2>
         <div class="content engineering">
           <div class="engineering-list">
-            <div class="engineering-row"><h3>Context before generation</h3><p class="small">Product intent, existing code, and design-system examples.</p></div>
-            <div class="engineering-row"><h3>Inspect the result</h3><p class="small">Compare the first pass with the real interaction and implementation.</p></div>
-            <div class="engineering-row"><h3>Keep expertise in control</h3><p class="small">Review behavior, constraints, accessibility, and code before shipping.</p></div>
+            <div class="engineering-row"><h3>Provide context</h3><p class="small">Intent · code · HDS examples</p></div>
+            <div class="engineering-row"><h3>Inspect the result</h3><p class="small">Compare intent with implementation</p></div>
+            <div class="engineering-row"><h3>Own the checks</h3><p class="small">Behavior · accessibility · code</p></div>
           </div>
           <div class="terminal">
             <div class="terminal-top">Val’s walkthrough</div>
             <p class="terminal-line"><span>01</span> Setup &amp; context</p>
-            <p class="terminal-line"><span>02</span> A real task or change</p>
-            <p class="terminal-line"><span>03</span> Review, correction &amp; checks</p>
+            <p class="terminal-line"><span>02</span> A real change</p>
+            <p class="terminal-line"><span>03</span> Review &amp; checks</p>
           </div>
         </div>
         <div class="footer"><span>Protected time for Engineering</span><span>06</span></div>
@@ -268,29 +276,28 @@
 
       <section class="slide" aria-label="Slide 7 of 10">
         <p class="eyebrow">Engineering-led · team adoption</p>
-        <h2>The workflow matters more when the team can use it.</h2>
+        <h2>Make it a team practice.</h2>
         <div class="content center">
           <div class="three-up">
-            <div class="panel"><span class="pill">Start</span><h3>Make the setup accessible</h3><p class="small">Val helped the team get started with VS Code and GitHub Copilot.</p></div>
-            <div class="panel"><span class="pill">Share</span><h3>Bring context into the work</h3><p class="small">Use existing product patterns and examples rather than asking AI to guess.</p></div>
-            <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep the useful practices; discuss where setup, output, or review still creates friction.</p></div>
+            <div class="panel"><span class="pill">Start</span><h3>Help people get set up</h3><p class="small">Val’s team onboarding: VS Code + Copilot</p></div>
+            <div class="panel"><span class="pill">Share</span><h3>Bring product context</h3><p class="small">Real patterns, not blank-slate guesses</p></div>
+            <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep useful practices. Surface friction.</p></div>
           </div>
-          <p class="caption small muted">The goal is a repeatable team practice—not a single person’s perfect setup.</p>
         </div>
         <div class="footer"><span>From individual practice to team learning</span><span>07</span></div>
         <aside class="speaker-notes" hidden><h2>Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
       </section>
 
       <section class="slide" aria-label="Slide 8 of 10">
-        <p class="eyebrow">Building beyond the immediate delivery</p>
-        <h2>Ship the work. Leave the product stronger.</h2>
+        <p class="eyebrow">Beyond delivery</p>
+        <h2>Leave the product stronger.</h2>
         <div class="content center">
           <div class="three-up">
-            <div class="panel"><span class="pill live">Shipped</span><h3>Usage + visibility</h3><p class="small">Controls that give customers more ways to govern Registry artifacts.</p></div>
-            <div class="panel"><span class="pill discovery">Technical discovery</span><h3>Ownership Control</h3><p class="small">Exploring the next part of an infrastructure governance model.</p></div>
-            <div class="panel"><span class="pill">Foundation</span><h3>Future-ready UI</h3><p class="small">Bulma removed; preparing for Solar and discussing technical changes beyond the current scope.</p></div>
+            <div class="panel"><span class="pill live">Shipped</span><h3>Usage + visibility</h3><p class="small">More control over Registry artifacts</p></div>
+            <div class="panel"><span class="pill discovery">Technical discovery</span><h3>Ownership Control</h3><p class="small">The next governance question</p></div>
+            <div class="panel"><span class="pill">Foundation</span><h3>Future-ready UI</h3><p class="small">Bulma removed. Solar preparation underway.</p></div>
           </div>
-          <p class="caption small muted">We also added practical improvements such as the versions list while continuing roadmap delivery.</p>
+          <p class="caption small muted">Versions list shipped. Future technical changes under discussion.</p>
         </div>
         <div class="footer"><span>Product capability + technical direction</span><span>08</span></div>
         <aside class="speaker-notes" hidden><h2>Scope and direction · 1 minute</h2><p><strong>Sanchita:</strong> Usage and Visibility Controls have shipped. Ownership is a discovery effort, not a committed delivery date. Explain how those controls support a broader governance direction without implying that the model is complete.</p><p><strong>Val:</strong> Discuss the versions list, the removal of Bulma, and one technical conversation that looks beyond the immediate project if useful. Separate future requests from committed work.</p></aside>
@@ -298,12 +305,12 @@
 
       <section class="slide" aria-label="Slide 9 of 10">
         <p class="eyebrow">What we’re learning</p>
-        <h2>Speed comes from the loop—not the tool alone.</h2>
+        <h2>The loop matters. Not just the tool.</h2>
         <div class="content center">
           <div class="takeaways">
-            <div class="takeaway"><b>01</b><div><h3>Share context early.</h3><p class="small">The user goal, existing patterns, and constraints make the first iteration more useful.</p></div></div>
-            <div class="takeaway"><b>02</b><div><h3>Review together while decisions are still flexible.</h3><p class="small">Design and Engineering can challenge the work without handing off ownership.</p></div></div>
-            <div class="takeaway"><b>03</b><div><h3>Keep learning where AI helps—and where it doesn’t.</h3><p class="small">We’re still working out the right context, verification, and team practices.</p></div></div>
+            <div class="takeaway"><b>01</b><div><h3>Share context early.</h3><p class="small">User goals · patterns · constraints</p></div></div>
+            <div class="takeaway"><b>02</b><div><h3>Review together.</h3><p class="small">Distinct expertise. Shared decisions.</p></div></div>
+            <div class="takeaway"><b>03</b><div><h3>Keep questioning the workflow.</h3><p class="small">Still learning: context, verification, adoption</p></div></div>
           </div>
         </div>
         <div class="footer"><span>Takeaways to adapt, not a universal playbook</span><span>09</span></div>
@@ -314,7 +321,7 @@
         <p class="eyebrow">Discussion</p>
         <div class="content center">
           <h1>What could your team<br>try together?</h1>
-          <p class="discussion">Where would earlier context, a shared review, or AI-assisted iteration make a real difference?</p>
+          <p class="discussion">Earlier context? Shared review? AI-assisted iteration?</p>
         </div>
         <div class="footer"><span>Questions · 3–5 minutes</span><span>10</span></div>
         <aside class="speaker-notes" hidden><h2>Discussion · 3–5 minutes</h2><p>Invite questions about the product work, Val’s setup and team adoption, or the boundaries of the approach. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Suggested spoken portion: approximately 11 minutes 45 seconds; with 3–5 minutes of discussion, allow roughly 15–17 minutes total. Shorten the walkthrough if the slot is closer to 10 minutes.</p></aside>
