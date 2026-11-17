@@ -5,27 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Terraform Registry — A faster feedback loop</title>
   <style>
+    @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/IBMPlexSans-Regular.ttf") format("truetype"); }
+    @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/IBMPlexSans-Medium.ttf") format("truetype"); }
+    @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/IBMPlexSans-SemiBold.ttf") format("truetype"); }
+    @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/IBMPlexMono-Regular.ttf") format("truetype"); }
     :root {
       color-scheme: light;
-      --ink: #17151d;
-      --muted: #605c6b;
-      --purple: #633cc9;
-      --purple-light: #ece5ff;
-      --line: #dedbe4;
-      --surface: #f7f6f9;
-      --dark: #17151e;
+      --ink: #161616;
+      --muted: #525252;
+      --accent: #0f62fe;
+      --accent-light: #d0e2ff;
+      --line: #c6c6c6;
+      --surface: #f4f4f4;
+      --dark: #161616;
       --font: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
       --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; background: #e7e5eb; color: var(--ink); font-family: var(--font); }
+    body { margin: 0; background: #e0e0e0; color: var(--ink); font-family: var(--font); }
     button { font: inherit; }
     .app { min-height: 100vh; display: grid; place-content: center; padding: 16px; }
     .stage {
       width: min(calc(100vw - 32px), calc((100vh - 82px) * 16 / 9));
       aspect-ratio: 16 / 9;
       background: #fff;
-      box-shadow: 0 16px 55px rgb(22 16 32 / 15%);
+      box-shadow: 0 16px 55px rgb(0 0 0 / 15%);
       overflow: hidden;
     }
     .slide {
@@ -39,77 +43,82 @@
     }
     .slide.active { display: flex; flex-direction: column; }
     .slide.dark { background: var(--dark); color: #fff; }
-    .slide.tint { background: #f1ecff; }
+    .slide.tint { background: #edf5ff; }
     h1, h2, h3, p { margin: 0; }
-    h1, h2 { font-weight: 500; letter-spacing: -.045em; }
+    h1, h2 { font-weight: 400; letter-spacing: -.025em; }
     h1 { font-size: clamp(35px, 5.2vw, 76px); line-height: 1.03; }
     h2 { font-size: clamp(28px, 3.8vw, 56px); line-height: 1.07; }
     h3 { font-size: clamp(15px, 1.55vw, 23px); line-height: 1.2; font-weight: 600; }
     p, li { font-size: clamp(13px, 1.4vw, 20px); line-height: 1.38; }
     .small { font-size: clamp(11px, 1.04vw, 15px); line-height: 1.4; }
     .muted { color: var(--muted); }
-    .dark .muted { color: #c2bdcc; }
+    .dark .muted { color: #c6c6c6; }
     .content { flex: 1; min-height: 0; }
     .center { display: flex; flex-direction: column; justify-content: center; }
-    .slide > h2 { max-width: 24ch; margin-bottom: 2%; }
-    .cover-title { max-width: 11ch; }
-    .cover-subtitle { max-width: 31ch; margin-top: 5%; color: #d7d2df; font-size: clamp(16px, 1.7vw, 25px); }
-    .cover-byline { margin-top: 8%; color: #c1bacb; }
+    .slide > h2 { max-width: 24ch; margin-bottom: 2%; padding-top: 1.5%; border-top: 1px solid var(--line); }
+    .dark > h2 { border-color: #525252; }
+    .title-slide { isolation: isolate; }
+    .title-content { width: 61%; position: relative; z-index: 1; }
+    .title-art { position: absolute; inset: 0 0 0 auto; width: 33%; height: 100%; pointer-events: none; }
+    .cover-title { max-width: 10ch; font-size: clamp(40px, 6.2vw, 90px); line-height: 1; }
+    .cover-subtitle { max-width: 30ch; margin-top: 6%; color: #c6c6c6; font-size: clamp(16px, 1.7vw, 25px); }
+    .cover-byline { margin-top: 9%; padding-top: 4%; border-top: 1px solid #525252; color: #c6c6c6; }
     .diagram-visual { flex: 1; min-height: 0; display: grid; place-items: center; }
     .cover-loop { width: 100%; height: 100%; max-width: 740px; min-height: 0; }
-    .cover-loop .loop-node { fill: #211c2e; stroke: #bca3ee; stroke-width: 1.5; }
-    .cover-loop .loop-link { fill: none; stroke: #e3d6ff; stroke-width: 2; marker-end: url(#cover-loop-arrow); }
-    .cover-loop .loop-owner { fill: #cbb4ff; font: 600 13px var(--mono); letter-spacing: 1px; }
+    .cover-loop .loop-node { fill: #262626; stroke: #78a9ff; stroke-width: 1.5; }
+    .cover-loop .loop-link { fill: none; stroke: #a6c8ff; stroke-width: 2; marker-end: url(#cover-loop-arrow); }
+    .cover-loop .loop-owner { fill: #78a9ff; font: 400 13px var(--mono); letter-spacing: 1px; }
     .cover-loop .loop-action { fill: #fff; font: 500 20px var(--font); }
-    .cover-loop .loop-detail { fill: #d1c7df; font: 14px var(--font); }
+    .cover-loop .loop-detail { fill: #c6c6c6; font: 14px var(--font); }
     .cover-loop .loop-center { fill: #fff; font: 500 17px var(--font); }
     .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; align-items: start; }
     .screen { min-width: 0; }
-    .screen img { display: block; width: 100%; height: clamp(150px, 21vw, 310px); object-fit: cover; object-position: top; border: 1px solid #d5d1dc; }
+    .screen img { display: block; width: 100%; height: clamp(150px, 21vw, 310px); object-fit: cover; object-position: top; border: 1px solid var(--line); }
     .screen-label { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 8px; font: 600 clamp(10px, .95vw, 14px)/1.2 var(--mono); text-transform: uppercase; }
     .caption { margin-top: 2%; }
-    .pill { display: inline-block; padding: 4px 8px; border-radius: 3px; color: #49239f; background: var(--purple-light); font: 600 clamp(10px, .85vw, 12px)/1.2 var(--mono); }
-    .pill.live { color: #195b31; background: #ddf5e4; }
-    .pill.discovery { color: #754400; background: #fff0cc; }
+    .pill { display: inline-block; padding: 4px 8px; color: #0043ce; background: var(--accent-light); font: 400 clamp(10px, .85vw, 12px)/1.2 var(--mono); }
+    .pill.live { color: #0e6027; background: #defbe6; }
+    .pill.discovery { color: #684e00; background: #fff1c7; }
     .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 3%; }
-    .timeline-item { padding: 18px 18px 0 0; border-top: 3px solid #b69ef5; }
-    .timeline-item + .timeline-item { padding-left: 18px; border-left: 1px solid #dedbe4; }
+    .timeline-item { padding: 18px 18px 0 0; border-top: 3px solid var(--accent); }
+    .timeline-item + .timeline-item { padding-left: 18px; border-left: 1px solid var(--line); }
     .timeline-item h3 { margin: 12px 0 10px; }
     .timeline-item p { color: var(--muted); }
-    .number { color: var(--purple); font: 500 clamp(20px, 2.2vw, 32px)/1 var(--mono); }
+    .number { color: var(--accent); font: 400 clamp(20px, 2.2vw, 32px)/1 var(--mono); }
     .impact { display: grid; grid-template-columns: 1.05fr 1fr; gap: 6%; align-items: center; }
-    .big-stat { color: var(--purple); font-size: clamp(60px, 9.5vw, 142px); line-height: .9; font-weight: 500; letter-spacing: -.07em; }
+    .big-stat { color: var(--accent); font-size: clamp(60px, 9.5vw, 142px); line-height: .9; font-weight: 400; letter-spacing: -.07em; }
     .stat-label { max-width: 20ch; margin-top: 4%; font-size: clamp(18px, 2vw, 30px); line-height: 1.18; }
     .facts { display: grid; gap: 0; border-top: 1px solid var(--line); }
     .fact { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
     .fact strong { font-size: clamp(13px, 1.25vw, 18px); }
     .fact p { color: var(--muted); font-size: clamp(12px, 1.1vw, 16px); }
     .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1%; margin-top: 4%; }
-    .loop-step { min-height: 130px; padding: 16px; background: #fff; border-top: 3px solid var(--purple); }
+    .loop-step { min-height: 130px; padding: 16px; background: #fff; border-top: 3px solid var(--accent); }
     .loop-step h3 { margin: 12px 0 8px; }
     .loop-step p { color: var(--muted); }
     .statement { margin-top: 3%; font-size: clamp(15px, 1.5vw, 22px); }
     .engineering { display: grid; grid-template-columns: 1.05fr .95fr; gap: 5%; align-items: center; }
     .engineering-list { display: grid; gap: 0; }
-    .engineering-row { padding: 12px 0; border-top: 1px solid #514a5e; }
+    .engineering-row { padding: 12px 0; border-top: 1px solid #525252; }
     .engineering-row h3 { margin-bottom: 5px; }
-    .engineering-row p { color: #c9c3d0; }
-    .terminal { padding: 7%; background: #292532; border: 1px solid #50495d; }
-    .terminal .terminal-top { color: #c3adff; font: 600 clamp(10px, 1vw, 14px)/1.5 var(--mono); text-transform: uppercase; }
-    .terminal .terminal-line { padding-top: 14px; color: #f5f2fb; font: clamp(12px, 1.2vw, 17px)/1.5 var(--mono); }
-    .terminal .terminal-line span { color: #b99dfb; }
+    .engineering-row p { color: #c6c6c6; }
+    .terminal { padding: 7%; background: #262626; border-top: 3px solid #4589ff; }
+    .terminal .terminal-top { color: #78a9ff; font: 400 clamp(10px, 1vw, 14px)/1.5 var(--mono); text-transform: uppercase; }
+    .terminal .terminal-line { padding-top: 14px; color: #f4f4f4; font: clamp(12px, 1.2vw, 17px)/1.5 var(--mono); }
+    .terminal .terminal-line span { color: #78a9ff; }
     .three-up { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2%; margin-top: 2%; }
-    .panel { padding: 20px; background: var(--surface); border-top: 3px solid #a68be9; }
+    .panel { padding: 20px; background: var(--surface); border-top: 3px solid var(--accent); }
     .panel h3 { margin: 12px 0 10px; }
     .panel p { color: var(--muted); }
     .takeaways { display: grid; gap: 0; margin-top: 1%; }
     .takeaway { display: grid; grid-template-columns: 45px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
-    .takeaway b { color: var(--purple); font: 500 clamp(18px, 2vw, 28px)/1 var(--mono); }
+    .takeaway b { color: var(--accent); font: 400 clamp(18px, 2vw, 28px)/1 var(--mono); }
     .takeaway h3 { margin-bottom: 5px; }
     .takeaway p { color: var(--muted); }
-    .discussion { max-width: 26ch; margin-top: 4%; color: #d8d1e2; font-size: clamp(17px, 1.8vw, 26px); }
-    .controls { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; color: #55505d; font: 12px var(--mono); }
-    .controls button { min-width: 34px; min-height: 32px; border: 1px solid #aaa4b2; background: #fff; color: #24202b; cursor: pointer; }
+    .discussion { max-width: 26ch; margin-top: 4%; color: #c6c6c6; font-size: clamp(17px, 1.8vw, 26px); }
+    .controls { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; color: #525252; font: 12px var(--mono); }
+    .controls button { min-width: 34px; min-height: 32px; border: 1px solid #8d8d8d; background: #fff; color: #161616; cursor: pointer; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .controls button:disabled { opacity: .4; cursor: default; }
     .controls .notes-button { padding: 0 11px; }
     .control-hint { margin-left: 5px; }
@@ -119,16 +128,18 @@
     body.notes-mode .app { display: none; }
     body.notes-mode #presenter { display: block; max-width: 760px; margin: 0 auto; padding: 32px; }
     #presenter .notes-nav { display: flex; gap: 12px; align-items: center; margin-bottom: 32px; }
-    #presenter button { padding: 8px 12px; border: 1px solid #aaa4b2; background: #fff; cursor: pointer; }
+    #presenter button { padding: 8px 12px; border: 1px solid #8d8d8d; background: #fff; cursor: pointer; }
     #presenter h2 { margin: 10px 0 20px; font-size: 30px; }
     #presenter p { margin-bottom: 16px; font-size: 17px; }
-    #presenter .notes-meta { color: var(--purple); font: 600 13px var(--mono); }
+    #presenter .notes-meta { color: var(--accent); font: 400 13px var(--mono); }
     @media (max-width: 700px) {
       .app { display: block; padding: 0; }
       .stage { width: 100%; aspect-ratio: auto; height: auto; min-height: calc(100vh - 58px); overflow: visible; }
       .slide { min-height: calc(100vh - 58px); height: auto; padding: 28px 24px 65px; overflow: visible; }
       .slide > h2 { margin-bottom: 20px; }
       .content { min-height: 0; }
+      .title-content { width: 100%; }
+      .title-art { width: 46%; opacity: .16; }
       .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
       .diagram-visual { flex: none; }
       .cover-loop { height: auto; }
@@ -154,8 +165,16 @@
 <body>
   <main class="app">
     <div class="stage" aria-label="Terraform Registry presentation">
-      <section class="slide dark active" aria-label="Slide 1 of 11">
-        <div class="content center">
+      <section class="slide dark title-slide active" aria-label="Slide 1 of 11">
+        <svg class="title-art" viewBox="0 0 320 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <path fill="#262626" d="M0 0h320v640H0z"></path>
+          <path fill="#0f62fe" d="M0 0h160v160H0zM160 320h160v160H160z"></path>
+          <path fill="#0043ce" d="M160 0h160v320H160zM0 480h320v160H0z"></path>
+          <path fill="#4589ff" d="M0 160h160v160H0zM0 480h160v160H0z"></path>
+          <path fill="none" stroke="#78a9ff" stroke-width="1" d="M0 160h320M0 320h320M0 480h320M160 0v640"></path>
+          <path fill="none" stroke="#fff" stroke-width="2" d="M40 80h200v320H80v160M220 380l20 20 20-20M60 540l20 20 20-20"></path>
+        </svg>
+        <div class="content center title-content">
           <div>
             <h1 class="cover-title">A faster feedback loop.</h1>
             <p class="cover-subtitle">Two registries. Shared craft. AI in the loop.</p>
@@ -171,25 +190,25 @@
               <title id="cover-loop-title">Our Design and Engineering feedback loop</title>
               <desc id="cover-loop-description">Sanchita brings user intent and a prototype. Val explores implementation with AI and HDS. Together they evaluate constraints and UX alternatives. Team review and checks inform iteration before shipping. Feedback returns to the next design decision.</desc>
               <defs>
-                <marker id="cover-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e3d6ff"></path></marker>
+                <marker id="cover-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a6c8ff"></path></marker>
               </defs>
               <path class="loop-link" d="M 226 91 H 312"></path>
               <path class="loop-link" d="M 420 150 V 288"></path>
               <path class="loop-link" d="M 314 349 H 228"></path>
               <path class="loop-link" d="M 120 290 V 152"></path>
-              <rect class="loop-node" x="14" y="32" width="212" height="118" rx="14"></rect>
+              <rect class="loop-node" x="14" y="32" width="212" height="118"></rect>
               <text class="loop-owner" x="34" y="61">SANCHITA</text>
               <text class="loop-action" x="34" y="96">Define the intent</text>
               <text class="loop-detail" x="34" y="125">User goal + prototype</text>
-              <rect class="loop-node" x="314" y="32" width="212" height="118" rx="14"></rect>
+              <rect class="loop-node" x="314" y="32" width="212" height="118"></rect>
               <text class="loop-owner" x="334" y="61">VAL</text>
               <text class="loop-action" x="334" y="96">Explore in code</text>
               <text class="loop-detail" x="334" y="125">AI + HDS + constraints</text>
-              <rect class="loop-node" x="314" y="290" width="212" height="118" rx="14"></rect>
+              <rect class="loop-node" x="314" y="290" width="212" height="118"></rect>
               <text class="loop-owner" x="334" y="319">TOGETHER</text>
               <text class="loop-action" x="334" y="354">Shape the solution</text>
               <text class="loop-detail" x="334" y="383">Options + UX judgment</text>
-              <rect class="loop-node" x="14" y="290" width="212" height="118" rx="14"></rect>
+              <rect class="loop-node" x="14" y="290" width="212" height="118"></rect>
               <text class="loop-owner" x="34" y="319">WITH THE TEAM</text>
               <text class="loop-action" x="34" y="354">Review &amp; refine</text>
               <text class="loop-detail" x="34" y="383">PR + checks → ship</text>
@@ -204,12 +223,12 @@
         <h2>Two registries. One coherent experience.</h2>
         <div class="content center">
           <div class="two-up">
-            <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Discover + publish</span></div><img src="images/Public%20registry.png" alt="Redesigned public Registry landing page"></div>
-            <div class="screen"><div class="screen-label"><span>Private Registry</span><span class="muted">Use + govern</span></div><img src="images/Private%20Library.png" alt="Private Registry library showing modules"></div>
+            <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Discover + publish</span></div><img src="images/Public%20Modules.png" alt="Public Registry module listing with search filters and module cards"></div>
+            <div class="screen"><div class="screen-label"><span>Private Registry</span><span class="muted">Scale + govern</span></div><img src="images/Private%20Library.png" alt="Private Registry library showing modules"></div>
           </div>
           <p class="caption small muted">Shared patterns. Distinct consumer and producer workflows.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Public Registry supports discovery and publishing. Private Registry helps organizations scale reuse and govern artifacts. Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent. The public module listing was captured from registry.terraform.io/browse/modules for this comparison.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
       </section>
 
       <section class="slide" aria-label="Slide 4 of 11">
