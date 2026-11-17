@@ -85,7 +85,13 @@
       background: radial-gradient(circle at 30% 22%, #d2baff 0%, #9968ed 27%, #6339bd 54%, #35234e 78%, #17151e 100%);
       filter: blur(3px);
     }
-    .cover-visual img { position: relative; width: 100%; max-height: 62%; object-fit: cover; object-position: top; border: 1px solid #9891a5; box-shadow: 0 20px 50px #09070f80; }
+    .cover-loop { position: relative; width: 100%; max-height: 100%; overflow: visible; }
+    .cover-loop .loop-node { fill: #211c2e; stroke: #bca3ee; stroke-width: 1.5; }
+    .cover-loop .loop-link { fill: none; stroke: #e3d6ff; stroke-width: 2; marker-end: url(#cover-loop-arrow); }
+    .cover-loop .loop-owner { fill: #cbb4ff; font: 600 13px var(--mono); letter-spacing: 1px; }
+    .cover-loop .loop-action { fill: #fff; font: 500 20px var(--font); }
+    .cover-loop .loop-detail { fill: #d1c7df; font: 14px var(--font); }
+    .cover-loop .loop-center { fill: #fff; font: 500 17px var(--font); }
     .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; align-items: start; }
     .screen { min-width: 0; }
     .screen img { display: block; width: 100%; height: clamp(150px, 21vw, 310px); object-fit: cover; object-position: top; border: 1px solid #d5d1dc; }
@@ -153,9 +159,8 @@
       .slide > h2 { margin-bottom: 20px; }
       .content { min-height: 0; }
       .split, .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
-      .cover-visual { min-height: 220px; }
+      .cover-visual { min-height: 260px; }
       .cover-visual::before { width: 220px; }
-      .cover-visual img { max-height: 210px; }
       .screen img { height: 150px; }
       .timeline, .loop { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
       .timeline-item + .timeline-item { border-left: 0; padding-left: 0; }
@@ -187,7 +192,37 @@
             <p class="cover-subtitle">Two registries. Shared craft. AI in the loop.</p>
             <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
-          <div class="cover-visual"><img src="images/Public%20registry.png" alt="The redesigned public Terraform Registry"></div>
+          <div class="cover-visual">
+            <svg class="cover-loop" viewBox="0 0 540 440" role="img" aria-labelledby="cover-loop-title cover-loop-description">
+              <title id="cover-loop-title">Our Design and Engineering feedback loop</title>
+              <desc id="cover-loop-description">Sanchita brings user intent and a prototype. Val explores implementation with AI and HDS. Together they evaluate constraints and UX alternatives. Team review and checks inform iteration before shipping. Feedback returns to the next design decision.</desc>
+              <defs>
+                <marker id="cover-loop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e3d6ff"></path></marker>
+              </defs>
+              <path class="loop-link" d="M 226 91 H 312"></path>
+              <path class="loop-link" d="M 420 150 V 288"></path>
+              <path class="loop-link" d="M 314 349 H 228"></path>
+              <path class="loop-link" d="M 120 290 V 152"></path>
+              <rect class="loop-node" x="14" y="32" width="212" height="118" rx="14"></rect>
+              <text class="loop-owner" x="34" y="61">SANCHITA</text>
+              <text class="loop-action" x="34" y="96">Define the intent</text>
+              <text class="loop-detail" x="34" y="125">User goal + prototype</text>
+              <rect class="loop-node" x="314" y="32" width="212" height="118" rx="14"></rect>
+              <text class="loop-owner" x="334" y="61">VAL</text>
+              <text class="loop-action" x="334" y="96">Explore in code</text>
+              <text class="loop-detail" x="334" y="125">AI + HDS + constraints</text>
+              <rect class="loop-node" x="314" y="290" width="212" height="118" rx="14"></rect>
+              <text class="loop-owner" x="334" y="319">TOGETHER</text>
+              <text class="loop-action" x="334" y="354">Shape the solution</text>
+              <text class="loop-detail" x="334" y="383">Options + UX judgment</text>
+              <rect class="loop-node" x="14" y="290" width="212" height="118" rx="14"></rect>
+              <text class="loop-owner" x="34" y="319">WITH THE TEAM</text>
+              <text class="loop-action" x="34" y="354">Review &amp; refine</text>
+              <text class="loop-detail" x="34" y="383">PR + checks → ship</text>
+              <text class="loop-center" x="270" y="214" text-anchor="middle">Shared decisions.</text>
+              <text class="loop-center" x="270" y="239" text-anchor="middle">Distinct expertise.</text>
+            </svg>
+          </div>
         </div>
         <div class="footer"><span>Delivery, craft, and what we’re learning</span><span>01</span></div>
         <aside class="speaker-notes" hidden><h2>Opening · 45 seconds</h2><p><strong>Sanchita:</strong> We’re sharing a way of working, not an AI success formula. The Registry gives us a concrete example of how shared context, direct collaboration, and AI-assisted iteration helped us move work forward.</p><p><strong>Val:</strong> We’ll show what shipped, how the working loop changed, and what we’re still figuring out. We’ve left room for your questions.</p></aside>
