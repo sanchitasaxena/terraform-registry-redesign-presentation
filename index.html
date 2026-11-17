@@ -40,14 +40,6 @@
     .slide.active { display: flex; flex-direction: column; }
     .slide.dark { background: var(--dark); color: #fff; }
     .slide.tint { background: #f1ecff; }
-    .eyebrow {
-      margin: 0 0 1.4%;
-      color: var(--purple);
-      font: 600 clamp(10px, 1vw, 14px)/1.2 var(--mono);
-      letter-spacing: .07em;
-      text-transform: uppercase;
-    }
-    .dark .eyebrow { color: #c3adff; }
     h1, h2, h3, p { margin: 0; }
     h1, h2 { font-weight: 500; letter-spacing: -.045em; }
     h1 { font-size: clamp(35px, 5.2vw, 76px); line-height: 1.03; }
@@ -59,33 +51,12 @@
     .dark .muted { color: #c2bdcc; }
     .content { flex: 1; min-height: 0; }
     .center { display: flex; flex-direction: column; justify-content: center; }
-    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 5%; align-items: center; }
     .slide > h2 { max-width: 24ch; margin-bottom: 2%; }
-    .footer {
-      position: absolute;
-      right: 5.3%;
-      bottom: 3%;
-      left: 5.3%;
-      display: flex;
-      justify-content: space-between;
-      color: #75717d;
-      font: clamp(9px, .75vw, 11px)/1 var(--mono);
-    }
-    .dark .footer { color: #b7b0c1; }
     .cover-title { max-width: 11ch; }
     .cover-subtitle { max-width: 31ch; margin-top: 5%; color: #d7d2df; font-size: clamp(16px, 1.7vw, 25px); }
     .cover-byline { margin-top: 8%; color: #c1bacb; }
-    .cover-visual { position: relative; align-self: stretch; display: grid; place-items: center; }
-    .cover-visual::before {
-      content: "";
-      position: absolute;
-      width: 86%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 22%, #d2baff 0%, #9968ed 27%, #6339bd 54%, #35234e 78%, #17151e 100%);
-      filter: blur(3px);
-    }
-    .cover-loop { position: relative; width: 100%; max-height: 100%; overflow: visible; }
+    .diagram-visual { flex: 1; min-height: 0; display: grid; place-items: center; }
+    .cover-loop { width: 100%; height: 100%; max-width: 740px; min-height: 0; }
     .cover-loop .loop-node { fill: #211c2e; stroke: #bca3ee; stroke-width: 1.5; }
     .cover-loop .loop-link { fill: none; stroke: #e3d6ff; stroke-width: 2; marker-end: url(#cover-loop-arrow); }
     .cover-loop .loop-owner { fill: #cbb4ff; font: 600 13px var(--mono); letter-spacing: 1px; }
@@ -158,9 +129,9 @@
       .slide { min-height: calc(100vh - 58px); height: auto; padding: 28px 24px 65px; overflow: visible; }
       .slide > h2 { margin-bottom: 20px; }
       .content { min-height: 0; }
-      .split, .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
-      .cover-visual { min-height: 260px; }
-      .cover-visual::before { width: 220px; }
+      .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
+      .diagram-visual { flex: none; }
+      .cover-loop { height: auto; }
       .screen img { height: 150px; }
       .timeline, .loop { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
       .timeline-item + .timeline-item { border-left: 0; padding-left: 0; }
@@ -168,7 +139,6 @@
       .three-up { grid-template-columns: 1fr; gap: 10px; }
       .panel { padding: 14px; }
       .fact { padding: 10px 0; }
-      .footer { right: 24px; bottom: 24px; left: 24px; }
       .control-hint { display: none; }
     }
     @media print {
@@ -184,15 +154,19 @@
 <body>
   <main class="app">
     <div class="stage" aria-label="Terraform Registry presentation">
-      <section class="slide dark active" aria-label="Slide 1 of 10">
-        <p class="eyebrow">Terraform Registry · Design + Engineering</p>
-        <div class="content split">
+      <section class="slide dark active" aria-label="Slide 1 of 11">
+        <div class="content center">
           <div>
             <h1 class="cover-title">A faster feedback loop.</h1>
             <p class="cover-subtitle">Two registries. Shared craft. AI in the loop.</p>
             <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
-          <div class="cover-visual">
+        </div>
+        <aside class="speaker-notes" hidden><h2>Opening · 45 seconds</h2><p><strong>Sanchita:</strong> We’re sharing a way of working, not an AI success formula. The Registry gives us a concrete example of how shared context, direct collaboration, and AI-assisted iteration helped us move work forward.</p><p><strong>Val:</strong> We’ll show what shipped, how the working loop changed, and what we’re still figuring out. We’ve left room for your questions.</p></aside>
+      </section>
+
+      <section class="slide dark" aria-label="Slide 2 of 11">
+          <div class="diagram-visual">
             <svg class="cover-loop" viewBox="0 0 540 440" role="img" aria-labelledby="cover-loop-title cover-loop-description">
               <title id="cover-loop-title">Our Design and Engineering feedback loop</title>
               <desc id="cover-loop-description">Sanchita brings user intent and a prototype. Val explores implementation with AI and HDS. Together they evaluate constraints and UX alternatives. Team review and checks inform iteration before shipping. Feedback returns to the next design decision.</desc>
@@ -223,13 +197,10 @@
               <text class="loop-center" x="270" y="239" text-anchor="middle">Distinct expertise.</text>
             </svg>
           </div>
-        </div>
-        <div class="footer"><span>Delivery, craft, and what we’re learning</span><span>01</span></div>
-        <aside class="speaker-notes" hidden><h2>Opening · 45 seconds</h2><p><strong>Sanchita:</strong> We’re sharing a way of working, not an AI success formula. The Registry gives us a concrete example of how shared context, direct collaboration, and AI-assisted iteration helped us move work forward.</p><p><strong>Val:</strong> We’ll show what shipped, how the working loop changed, and what we’re still figuring out. We’ve left room for your questions.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Our collaboration loop · 45 seconds</h2><p><strong>Sanchita:</strong> I bring the user goal and a prototype or interaction to discuss. Val explores implementation with existing code, AI, and HDS patterns.</p><p><strong>Val:</strong> Constraints become options we evaluate together against the UX goal. Team review and checks help us refine before shipping. Feedback informs the next iteration; this isn’t a one-way handoff.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 2 of 10">
-        <p class="eyebrow">The product context</p>
+      <section class="slide" aria-label="Slide 3 of 11">
         <h2>Two registries. One coherent experience.</h2>
         <div class="content center">
           <div class="two-up">
@@ -238,12 +209,10 @@
           </div>
           <p class="caption small muted">Shared patterns. Distinct consumer and producer workflows.</p>
         </div>
-        <div class="footer"><span>Set the context</span><span>02</span></div>
         <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 3 of 10">
-        <p class="eyebrow">The longer arc</p>
+      <section class="slide" aria-label="Slide 4 of 11">
         <h2>Small investments built on each other.</h2>
         <div class="content center">
           <div class="timeline">
@@ -254,12 +223,10 @@
           </div>
           <p class="caption small muted">Overlapping workstreams—not one sprint.</p>
         </div>
-        <div class="footer"><span>Foundation → delivery → next questions</span><span>03</span></div>
         <aside class="speaker-notes" hidden><h2>Timeline · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed incrementally alongside feature work. The public reskin was a focused effort of under two weeks—not the timeline for the whole partnership.</p><p><strong>Val:</strong> Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Avoid naming dates or phases we haven’t verified.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 4 of 10">
-        <p class="eyebrow">What the work produced</p>
+      <section class="slide tint" aria-label="Slide 5 of 11">
         <h2>More than a reskin.</h2>
         <div class="content impact">
           <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p></div>
@@ -269,12 +236,10 @@
             <div class="fact"><strong>Foundation</strong><p>Bulma removed. Preparing for Solar + dark mode.</p></div>
           </div>
         </div>
-        <div class="footer"><span>Delivery and outcomes · not an AI-only claim</span><span>04</span></div>
         <aside class="speaker-notes" hidden><h2>Results · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> The under-two-week figure applies to the focused public reskin. Across a longer period we also shipped private-screen redesigns and Artifact Usage and Visibility Controls. Developer advocates use the controls as part of the HCP Terraform value story. The work contributed to a customer renewal and resolving escalations; don’t claim it was the sole cause.</p><p><strong>Val:</strong> Bulma removal is complete; preparation for Project Solar and dark mode is not the same as claiming either has shipped.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 5 of 10">
-        <p class="eyebrow">The working method</p>
+      <section class="slide tint" aria-label="Slide 6 of 11">
         <h2>Bring decisions closer to the work.</h2>
         <div class="content center">
           <div class="loop">
@@ -285,12 +250,10 @@
           </div>
           <p class="statement">AI accelerates iteration. <strong>People own the judgment.</strong></p>
         </div>
-        <div class="footer"><span>Shared loop · distinct craft expertise</span><span>05</span></div>
         <aside class="speaker-notes" hidden><h2>Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Rather than waiting until every detail is fully specified, bring intent and the interaction into a shared conversation early. The public and private efforts used different design methods; this is the common collaboration pattern, not a claim that every project followed the same steps.</p><p><strong>Val:</strong> Engineering tests feasibility, suggests alternatives, and reviews the resulting implementation. AI can accelerate iteration, but it does not decide the right UX or remove review and testing.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 6 of 10">
-        <p class="eyebrow">Engineering-led · workflow</p>
+      <section class="slide dark" aria-label="Slide 7 of 11">
         <h2>Inside the AI-assisted workflow.</h2>
         <div class="content engineering">
           <div class="engineering-list">
@@ -305,12 +268,10 @@
             <p class="terminal-line"><span>03</span> Review &amp; checks</p>
           </div>
         </div>
-        <div class="footer"><span>Protected time for Engineering</span><span>06</span></div>
         <aside class="speaker-notes" hidden><h2>Val’s setup and workflow · 2 minutes 30 seconds</h2><p><strong>Val leads:</strong> Show your actual VS Code and GitHub Copilot setup, what context you provide, and how that context relates to existing Registry and HDS patterns. Explain the process in your own words rather than implying an unverified configuration.</p><p>Walk through a real task: the input, the first output, what you reviewed or corrected, and the checks before code was ready. A sanitized prompt, diff, or screen recording would make this tangible; choose one you’re comfortable sharing. Say what accelerated and what remained your responsibility. No invented measurements or agent discoveries.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 7 of 10">
-        <p class="eyebrow">Engineering-led · team adoption</p>
+      <section class="slide" aria-label="Slide 8 of 11">
         <h2>Make it a team practice.</h2>
         <div class="content center">
           <div class="three-up">
@@ -319,12 +280,10 @@
             <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep useful practices. Surface friction.</p></div>
           </div>
         </div>
-        <div class="footer"><span>From individual practice to team learning</span><span>07</span></div>
         <aside class="speaker-notes" hidden><h2>Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 8 of 10">
-        <p class="eyebrow">Beyond delivery</p>
+      <section class="slide" aria-label="Slide 9 of 11">
         <h2>Leave the product stronger.</h2>
         <div class="content center">
           <div class="three-up">
@@ -334,12 +293,10 @@
           </div>
           <p class="caption small muted">Versions list shipped. Future technical changes under discussion.</p>
         </div>
-        <div class="footer"><span>Product capability + technical direction</span><span>08</span></div>
         <aside class="speaker-notes" hidden><h2>Scope and direction · 1 minute</h2><p><strong>Sanchita:</strong> Usage and Visibility Controls have shipped. Ownership is a discovery effort, not a committed delivery date. Explain how those controls support a broader governance direction without implying that the model is complete.</p><p><strong>Val:</strong> Discuss the versions list, the removal of Bulma, and one technical conversation that looks beyond the immediate project if useful. Separate future requests from committed work.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 9 of 10">
-        <p class="eyebrow">What we’re learning</p>
+      <section class="slide" aria-label="Slide 10 of 11">
         <h2>The loop matters. Not just the tool.</h2>
         <div class="content center">
           <div class="takeaways">
@@ -348,18 +305,15 @@
             <div class="takeaway"><b>03</b><div><h3>Keep questioning the workflow.</h3><p class="small">Still learning: context, verification, adoption</p></div></div>
           </div>
         </div>
-        <div class="footer"><span>Takeaways to adapt, not a universal playbook</span><span>09</span></div>
         <aside class="speaker-notes" hidden><h2>Lessons · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Explain the value of bringing the user goal and a concrete interaction into the conversation early, and how Design remained involved through implementation.</p><p><strong>Val:</strong> Explain the engineering judgment and checks that still matter. Share one limitation or open question from your actual experience: for example, what context is worth maintaining or when reviewing generated output takes more effort. Do not invent a failure or measured speedup.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 10 of 10">
-        <p class="eyebrow">Discussion</p>
+      <section class="slide dark" aria-label="Slide 11 of 11">
         <div class="content center">
           <h1>What could your team<br>try together?</h1>
           <p class="discussion">Earlier context? Shared review? AI-assisted iteration?</p>
         </div>
-        <div class="footer"><span>Questions · 3–5 minutes</span><span>10</span></div>
-        <aside class="speaker-notes" hidden><h2>Discussion · 3–5 minutes</h2><p>Invite questions about the product work, Val’s setup and team adoption, or the boundaries of the approach. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Suggested spoken portion: approximately 11 minutes 45 seconds; with 3–5 minutes of discussion, allow roughly 15–17 minutes total. Shorten the walkthrough if the slot is closer to 10 minutes.</p></aside>
+        <aside class="speaker-notes" hidden><h2>Discussion · 3–5 minutes</h2><p>Invite questions about the product work, Val’s setup and team adoption, or the boundaries of the approach. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Suggested spoken portion: approximately 12 minutes 30 seconds; with 3–5 minutes of discussion, allow roughly 16–18 minutes total. Shorten the walkthrough if the slot is closer to 10 minutes.</p></aside>
       </section>
     </div>
     <nav class="controls" aria-label="Presentation controls">
