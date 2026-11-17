@@ -3,836 +3,368 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
-  <title>Terraform Registry — Design + Engineering</title>
+  <title>Terraform Registry — A faster feedback loop</title>
   <style>
     :root {
       color-scheme: light;
-      --ink: #161616;
-      --muted: #525252;
-      --blue: #0f62fe;
-      --blue-dark: #0043ce;
-      --blue-pale: #e5f6ff;
-      --blue-wash: #d0e2ff;
-      --line: #c6c6c6;
-      --surface: #f4f4f4;
-      --white: #fff;
-      --success: #198038;
-      --amber: #8a3800;
+      --ink: #17151d;
+      --muted: #605c6b;
+      --purple: #633cc9;
+      --purple-light: #ece5ff;
+      --line: #dedbe4;
+      --surface: #f7f6f9;
+      --dark: #17151e;
       --font: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
       --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
     }
-
     * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #e0e0e0;
-      color: var(--ink);
-      font-family: var(--font);
-    }
-
+    body { margin: 0; background: #e7e5eb; color: var(--ink); font-family: var(--font); }
     button { font: inherit; }
-
-    .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: 1fr auto;
-      justify-items: center;
-      align-items: center;
-      padding: 20px 20px 10px;
-    }
-
-    body.render-mode { min-height: 0; background: #fff; }
-    body.render-mode .app { display: block; min-height: 0; padding: 0; }
-    body.render-mode .stage {
-      width: 100vw;
-      height: 100vh;
-      min-height: 0;
-      max-height: none;
-      box-shadow: none;
-    }
-
-    body.render-mode .controls,
-    body.render-mode .notes-button,
-    body.render-mode #notesPanel { display: none !important; }
-
+    .app { min-height: 100vh; display: grid; place-content: center; padding: 16px; }
     .stage {
-      position: relative;
-      width: min(100vw - 40px, 177.777vh);
-      height: min(56.25vw, calc(100vh - 88px));
-      min-height: 440px;
-      max-height: 900px;
-      overflow: hidden;
-      background: var(--white);
-      box-shadow: 0 12px 50px rgb(0 0 0 / 14%);
+      width: min(calc(100vw - 32px), calc((100vh - 82px) * 16 / 9));
       aspect-ratio: 16 / 9;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      display: none;
+      background: #fff;
+      box-shadow: 0 16px 55px rgb(22 16 32 / 15%);
       overflow: hidden;
-      padding: 5.2% 6.4% 5.8%;
-      background: var(--white);
     }
-
+    .slide {
+      position: relative;
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 4.5% 5.3% 5%;
+      overflow: hidden;
+      background: #fff;
+    }
     .slide.active { display: flex; flex-direction: column; }
-    .slide.dark { background: #0b0b0b; color: var(--white); }
-    .slide.blue-wash { background: var(--blue-pale); color: var(--ink); }
-    .slide.blue-wash .small, .slide.blue-wash .muted { color: #393939; }
-    .slide.blue-wash .blue { color: var(--blue-dark); }
-    .slide.blue-wash .flow-box { background: #fff; color: var(--ink); border-color: #4589ff; }
-    .prototype-workflow .flow-box { background: #262626; color: #fff; border-color: #6f6f6f; }
-    .prototype-workflow .flow-box .small { color: #c6c6c6; }
-
-    h1, h2, h3, p { margin-top: 0; }
-
-    h1, h2 {
-      font-weight: 400;
-      letter-spacing: -.045em;
-      line-height: 1.06;
+    .slide.dark { background: var(--dark); color: #fff; }
+    .slide.tint { background: #f1ecff; }
+    .eyebrow {
+      margin: 0 0 1.4%;
+      color: var(--purple);
+      font: 600 clamp(10px, 1vw, 14px)/1.2 var(--mono);
+      letter-spacing: .07em;
+      text-transform: uppercase;
     }
-
-    h1 { font-size: clamp(36px, 5.4vw, 78px); }
-    h2 { font-size: clamp(30px, 4vw, 58px); }
-    h3 { font-size: clamp(16px, 1.65vw, 24px); font-weight: 500; }
-    p, li { font-size: clamp(13px, 1.55vw, 21px); line-height: 1.42; }
-    .small { color: var(--muted); font-size: clamp(11px, 1.1vw, 15px); }
-    .dark .small { color: #a8a8a8; }
-    .mono { font-family: var(--mono); }
-    .blue { color: var(--blue); }
+    .dark .eyebrow { color: #c3adff; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2 { font-weight: 500; letter-spacing: -.045em; }
+    h1 { font-size: clamp(35px, 5.2vw, 76px); line-height: 1.03; }
+    h2 { font-size: clamp(28px, 3.8vw, 56px); line-height: 1.07; }
+    h3 { font-size: clamp(15px, 1.55vw, 23px); line-height: 1.2; font-weight: 600; }
+    p, li { font-size: clamp(13px, 1.4vw, 20px); line-height: 1.38; }
+    .small { font-size: clamp(11px, 1.04vw, 15px); line-height: 1.4; }
     .muted { color: var(--muted); }
-
+    .dark .muted { color: #c2bdcc; }
+    .content { flex: 1; min-height: 0; }
+    .center { display: flex; flex-direction: column; justify-content: center; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 5%; align-items: center; }
+    .slide > h2 { max-width: 24ch; margin-bottom: 2%; }
     .footer {
       position: absolute;
-      right: 6.4%;
-      bottom: 2.3%;
-      left: 6.4%;
+      right: 5.3%;
+      bottom: 3%;
+      left: 5.3%;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      color: var(--muted);
-      font-size: clamp(9px, .8vw, 12px);
+      color: #75717d;
+      font: clamp(9px, .75vw, 11px)/1 var(--mono);
     }
-
-    .dark .footer { color: #a8a8a8; }
-    .slide:first-child .footer { z-index: 2; padding-top: 8px; background: #fff; }
-    .content { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5%; align-items: center; }
-    .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.2%; }
-    .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
-    .rule { height: 1px; background: var(--line); }
-    .dark .rule { background: #393939; }
-
-    .visual {
-      position: relative;
-      min-height: 220px;
-      padding: 24px;
-      background-color: #fff;
-      background-image: radial-gradient(#d9e2f3 .8px, transparent .8px);
-      background-size: 12px 12px;
+    .dark .footer { color: #b7b0c1; }
+    .cover-title { max-width: 11ch; }
+    .cover-subtitle { max-width: 31ch; margin-top: 5%; color: #d7d2df; font-size: clamp(16px, 1.7vw, 25px); }
+    .cover-byline { margin-top: 8%; color: #c1bacb; }
+    .cover-visual { position: relative; align-self: stretch; display: grid; place-items: center; }
+    .cover-visual::before { content: ""; position: absolute; width: 86%; aspect-ratio: 1; border-radius: 50%; background: #5c36bd; filter: blur(1px); }
+    .cover-visual img { position: relative; width: 100%; max-height: 62%; object-fit: cover; object-position: top; border: 1px solid #9891a5; box-shadow: 0 20px 50px #09070f80; }
+    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; align-items: start; }
+    .screen { min-width: 0; }
+    .screen img { display: block; width: 100%; height: clamp(150px, 21vw, 310px); object-fit: cover; object-position: top; border: 1px solid #d5d1dc; }
+    .screen-label { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 8px; font: 600 clamp(10px, .95vw, 14px)/1.2 var(--mono); text-transform: uppercase; }
+    .caption { margin-top: 2%; }
+    .pill { display: inline-block; padding: 4px 8px; border-radius: 3px; color: #49239f; background: var(--purple-light); font: 600 clamp(10px, .85vw, 12px)/1.2 var(--mono); }
+    .pill.live { color: #195b31; background: #ddf5e4; }
+    .pill.discovery { color: #754400; background: #fff0cc; }
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 3%; }
+    .timeline-item { padding: 18px 18px 0 0; border-top: 3px solid #b69ef5; }
+    .timeline-item + .timeline-item { padding-left: 18px; border-left: 1px solid #dedbe4; }
+    .timeline-item h3 { margin: 12px 0 10px; }
+    .timeline-item p { color: var(--muted); }
+    .number { color: var(--purple); font: 500 clamp(20px, 2.2vw, 32px)/1 var(--mono); }
+    .impact { display: grid; grid-template-columns: 1.05fr 1fr; gap: 6%; align-items: center; }
+    .big-stat { color: var(--purple); font-size: clamp(60px, 9.5vw, 142px); line-height: .9; font-weight: 500; letter-spacing: -.07em; }
+    .stat-label { max-width: 20ch; margin-top: 4%; font-size: clamp(18px, 2vw, 30px); line-height: 1.18; }
+    .facts { display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .fact { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .fact strong { font-size: clamp(13px, 1.25vw, 18px); }
+    .fact p { color: var(--muted); font-size: clamp(12px, 1.1vw, 16px); }
+    .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1%; margin-top: 4%; }
+    .loop-step { min-height: 130px; padding: 16px; background: #fff; border-top: 3px solid var(--purple); }
+    .loop-step h3 { margin: 12px 0 8px; }
+    .loop-step p { color: var(--muted); }
+    .statement { margin-top: 3%; font-size: clamp(15px, 1.5vw, 22px); }
+    .engineering { display: grid; grid-template-columns: 1.05fr .95fr; gap: 5%; align-items: center; }
+    .engineering-list { display: grid; gap: 0; }
+    .engineering-row { padding: 12px 0; border-top: 1px solid #514a5e; }
+    .engineering-row h3 { margin-bottom: 5px; }
+    .engineering-row p { color: #c9c3d0; }
+    .terminal { padding: 7%; background: #292532; border: 1px solid #50495d; }
+    .terminal .terminal-top { color: #c3adff; font: 600 clamp(10px, 1vw, 14px)/1.5 var(--mono); text-transform: uppercase; }
+    .terminal .terminal-line { padding-top: 14px; color: #f5f2fb; font: clamp(12px, 1.2vw, 17px)/1.5 var(--mono); }
+    .terminal .terminal-line span { color: #b99dfb; }
+    .three-up { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2%; margin-top: 2%; }
+    .panel { padding: 20px; background: var(--surface); border-top: 3px solid #a68be9; }
+    .panel h3 { margin: 12px 0 10px; }
+    .panel p { color: var(--muted); }
+    .takeaways { display: grid; gap: 0; margin-top: 1%; }
+    .takeaway { display: grid; grid-template-columns: 45px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+    .takeaway b { color: var(--purple); font: 500 clamp(18px, 2vw, 28px)/1 var(--mono); }
+    .takeaway h3 { margin-bottom: 5px; }
+    .takeaway p { color: var(--muted); }
+    .discussion { max-width: 26ch; margin-top: 4%; color: #d8d1e2; font-size: clamp(17px, 1.8vw, 26px); }
+    .controls { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; color: #55505d; font: 12px var(--mono); }
+    .controls button { min-width: 34px; min-height: 32px; border: 1px solid #aaa4b2; background: #fff; color: #24202b; cursor: pointer; }
+    .controls button:disabled { opacity: .4; cursor: default; }
+    .controls .notes-button { padding: 0 11px; }
+    .control-hint { margin-left: 5px; }
+    #notes-status { color: #743817; }
+    #presenter { display: none; }
+    body.notes-mode { background: #fff; }
+    body.notes-mode .app { display: none; }
+    body.notes-mode #presenter { display: block; max-width: 760px; margin: 0 auto; padding: 32px; }
+    #presenter .notes-nav { display: flex; gap: 12px; align-items: center; margin-bottom: 32px; }
+    #presenter button { padding: 8px 12px; border: 1px solid #aaa4b2; background: #fff; cursor: pointer; }
+    #presenter h2 { margin: 10px 0 20px; font-size: 30px; }
+    #presenter p { margin-bottom: 16px; font-size: 17px; }
+    #presenter .notes-meta { color: var(--purple); font: 600 13px var(--mono); }
+    @media (max-width: 700px) {
+      .app { display: block; padding: 0; }
+      .stage { width: 100%; aspect-ratio: auto; height: auto; min-height: calc(100vh - 58px); overflow: visible; }
+      .slide { min-height: calc(100vh - 58px); height: auto; padding: 28px 24px 65px; overflow: visible; }
+      .slide > h2 { margin-bottom: 20px; }
+      .content { min-height: 0; }
+      .split, .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
+      .cover-visual { min-height: 220px; }
+      .cover-visual::before { width: 220px; }
+      .cover-visual img { max-height: 210px; }
+      .screen img { height: 150px; }
+      .timeline, .loop { grid-template-columns: repeat(2, 1fr); row-gap: 18px; }
+      .timeline-item + .timeline-item { border-left: 0; padding-left: 0; }
+      .loop-step { min-height: 0; }
+      .three-up { grid-template-columns: 1fr; gap: 10px; }
+      .panel { padding: 14px; }
+      .fact { padding: 10px 0; }
+      .footer { right: 24px; bottom: 24px; left: 24px; }
+      .control-hint { display: none; }
     }
-
-    .visual-inner { height: 100%; padding: 22px; background: #fff; border: 1px solid #e0e0e0; }
-    .placeholder-marker {
-      position: absolute;
-      z-index: 2;
-      top: 10px;
-      right: 10px;
-      padding: 6px 8px;
-      background: #161616;
-      color: #fff;
-      font: 700 10px/1.2 var(--mono);
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .cover-ui, .code, .support-visual { position: relative; }
-    .visual .placeholder-marker { top: 8px; right: 8px; }
-    .code .placeholder-marker { top: 8px; right: 8px; }
-    .has-placeholder { position: relative; }
-    .has-placeholder > .placeholder-marker { top: 0; right: 0; }
-    .line-icon { width: 38px; height: 38px; color: var(--blue); }
-    .icon-tile { display: grid; gap: 16px; align-content: start; }
-    .icon-tile p { margin-bottom: 0; }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 5px 9px;
-      border-radius: 3px;
-      background: #e0e0e0;
-      color: var(--ink);
-      font-size: clamp(10px, 1vw, 13px);
-      font-weight: 600;
-    }
-
-    .pill.success { background: #defbe6; color: #044317; }
-    .pill.progress { background: #fff1c7; color: #6f3c00; }
-    .pill.future { background: #e8daff; color: #491d8b; }
-    .card {
-      padding: 18px 20px;
-      border: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .card p:last-child { margin-bottom: 0; }
-    .card h3 { margin-bottom: 8px; }
-    .accent-card { border-top: 4px solid var(--blue); }
-    .status { margin-top: auto; padding-top: 14px; }
-
-    .code {
-      padding: 42px 22px 20px;
-      background: #161616;
-      color: #f4f4f4;
-      font: clamp(11px, 1vw, 14px)/1.65 var(--mono);
-      overflow: hidden;
-    }
-
-    .code .comment { color: #a8a8a8; }
-    .code .purple { color: #be95ff; }
-    .code .green { color: #42be65; }
-    .code .orange { color: #ff832b; }
-
-    .big-number {
-      color: var(--blue);
-      font: 400 clamp(40px, 6vw, 84px)/1 var(--mono);
-      letter-spacing: -.08em;
-    }
-
-    .kicker {
-      margin: 0 0 10px;
-      font-size: clamp(10px, 1vw, 14px);
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .stage-title { max-width: 880px; }
-    .cover-copy { display: flex; flex-direction: column; justify-content: center; }
-    .cover-copy h1 { max-width: 9ch; margin-bottom: 12px; }
-    .cover-copy .subtitle { max-width: 26ch; font-size: clamp(17px, 2vw, 28px); }
-    .cover-copy .byline { margin-top: 30px; }
-
-    .cover-ui {
-      padding: 15px 0 15px 18px;
-      background: #f4f4f4;
-      transform: translateY(-12px);
-    }
-
-    .cover-image {
-      display: block;
-      width: 100%;
-      max-height: 48vh;
-      object-fit: contain;
-      border: 1px solid #d0d0d0;
-      box-shadow: 0 12px 24px rgb(0 0 0 / 12%);
-    }
-
-    .cover-caption {
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .ui-window {
-      min-height: 340px;
-      border: 1px solid #c6c6c6;
-      background: #fff;
-      box-shadow: 0 12px 24px rgb(0 0 0 / 12%);
-    }
-
-    .ui-bar { height: 34px; display: flex; align-items: center; padding: 0 14px; background: #161616; color: #fff; font: 11px var(--mono); }
-    .ui-body { padding: 18px 22px; }
-    .ui-breadcrumb { color: #6f6f6f; font-size: 10px; margin-bottom: 12px; }
-    .ui-heading { font-size: 20px; line-height: 1.2; font-weight: 600; margin-bottom: 4px; }
-    .ui-row { display: grid; grid-template-columns: 1fr auto; padding: 8px 10px; border-top: 1px solid #e0e0e0; font-size: 12px; }
-    .slide.blue-wash .visual { height: 260px; min-height: 0; }
-    .slide.blue-wash .visual-inner { padding: 14px; }
-    .slide.blue-wash .visual-inner .card { padding: 9px 12px; }
-
-    .flow { display: flex; align-items: stretch; gap: 11px; }
-    .flow-step { flex: 1; display: grid; align-content: start; gap: 12px; min-width: 0; }
-    .flow-box { display: grid; place-content: center; min-height: 72px; padding: 10px; border: 1px solid #a6c8ff; background: #edf5ff; text-align: center; }
-    .flow-arrow { display: grid; align-content: center; color: var(--blue); font-size: 25px; }
-    .flow-step p { margin: 0; }
-    .persona-visual {
-      width: min(100%, 900px);
-      margin: 0 auto;
-      text-align: center;
-    }
-    .persona-visual img {
-      display: block;
-      width: auto;
-      max-width: 100%;
-      max-height: 52vh;
-      margin: 0 auto;
-      object-fit: contain;
-    }
-    .persona-visual figcaption, .guardrail-visual figcaption, .solar-visual figcaption {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: clamp(10px, 1vw, 13px);
-      text-align: center;
-    }
-
-    .metric-bar { display: flex; gap: 18px; align-items: baseline; }
-    .metric-bar strong { color: var(--blue); font: 500 clamp(26px, 3.2vw, 44px)/1 var(--mono); }
-    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: auto; }
-    .timeline-step { padding: 18px 14px 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-    .timeline-step:first-child { border-left: 0; padding-left: 0; }
-    .timeline-step b { display: block; margin-bottom: 12px; color: var(--blue); font: 400 clamp(24px, 3vw, 42px)/1 var(--mono); }
-    .timeline-step p { font-size: clamp(12px, 1.2vw, 16px); }
-
-    .control-list { display: grid; gap: 13px; }
-    .control-layout {
-      display: grid;
-      width: 100%;
-      grid-template-columns: minmax(0, 1.35fr) minmax(250px, .9fr);
-      align-items: center;
-      gap: 4%;
-    }
-    .control-row { display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-    .control-row h3, .control-row p { margin: 0; }
-    .control-row p { color: var(--muted); }
-    .guardrail-visual {
-      margin: 0;
-      padding: 12px;
-      border: 1px solid var(--line);
-      background: #f4f4f4;
-    }
-    .guardrail-visual img, .solar-visual img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-    }
-    .solar-visual {
-      margin: 0;
-      padding: 10px;
-      background: #f4f4f4;
-      border: 1px solid var(--line);
-    }
-
-    .quarter { display: flex; align-items: center; gap: 9px; margin-top: 22px; }
-    .quarter span { flex: 1; height: 1px; background: var(--line); }
-    .quarter i { width: 11px; height: 11px; border-radius: 50%; background: var(--blue); }
-
-    .notes-button {
-      position: fixed;
-      right: 22px;
-      bottom: 16px;
-      z-index: 10;
-      padding: 9px 14px;
-      border: 1px solid #8d8d8d;
-      border-radius: 3px;
-      background: #fff;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    .notes {
-      position: fixed;
-      z-index: 9;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      max-height: 38vh;
-      overflow: auto;
-      padding: 20px max(24px, calc((100vw - 1040px) / 2));
-      background: #fff;
-      box-shadow: 0 -8px 30px rgb(0 0 0 / 18%);
-    }
-
-    .notes[hidden] { display: none; }
-    .notes h2 { margin-bottom: 8px; font-size: 20px; letter-spacing: 0; }
-    .notes p, .notes li { font-size: 14px; }
-    body.notes-mode { min-height: 100vh; background: #f4f4f4; }
-    body.notes-mode .app, body.notes-mode .notes-button { display: none; }
-    body.notes-mode #notesPanel,
-    body.notes-mode #notesPanel[hidden] {
-      position: relative;
-      inset: auto;
-      display: block;
-      width: 100%;
-      height: 100vh;
-      max-height: none;
-      overflow: auto;
-      padding: 28px max(24px, calc((100vw - 820px) / 2));
-      background: #fff;
-      box-shadow: none;
-    }
-
-    .notes-controls {
-      position: sticky;
-      top: -28px;
-      z-index: 3;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: -28px calc(max(24px, (100vw - 820px) / 2) * -1) 24px;
-      padding: 14px max(24px, calc((100vw - 820px) / 2));
-      border-bottom: 1px solid var(--line);
-      background: #fff;
-    }
-
-    .notes-controls button {
-      padding: 8px 12px;
-      border: 1px solid #8d8d8d;
-      border-radius: 2px;
-      background: #fff;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    .notes-content h2 { margin-bottom: 6px; font-size: 24px; letter-spacing: 0; }
-    .notes-content .lead { margin-bottom: 24px; color: var(--blue-dark); font: 600 13px var(--mono); }
-
-    .controls {
-      width: min(100%, 840px);
-      min-height: 42px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      color: #393939;
-      font: 12px var(--mono);
-    }
-
-    .controls button {
-      width: 34px;
-      height: 30px;
-      border: 1px solid #8d8d8d;
-      border-radius: 2px;
-      background: #fff;
-      color: var(--ink);
-      cursor: pointer;
-    }
-
-    .controls button:disabled { opacity: .35; cursor: default; }
-    .controls .progress-track { width: min(250px, 28vw); height: 3px; background: #c6c6c6; }
-    .controls .progress-fill { width: 0; height: 100%; background: var(--blue); transition: width .2s ease; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-
-    @media (max-width: 740px) {
-      .app { padding: 8px; }
-      .stage { width: 100vw; height: calc(100vh - 68px); min-height: 0; }
-      .slide { padding: 7% 7% 10%; }
-      .two-col { grid-template-columns: 1fr 1fr; gap: 4%; }
-      .three-col { gap: 8px; }
-      .card { padding: 12px; }
-      .visual { min-height: 180px; padding: 12px; }
-      .visual-inner { padding: 12px; }
-      .ui-window { min-height: 240px; }
-      .ui-body { padding: 14px; }
-      .control-layout { grid-template-columns: 1fr 1fr; gap: 3%; }
-      .control-row { grid-template-columns: 1fr 1.5fr; gap: 8px; }
-      .control-row .pill { grid-column: 2; justify-self: start; }
-      .flow { gap: 5px; }
-      .flow-box { min-height: 54px; padding: 5px; }
-      .flow-step p { font-size: 10px; }
-      .notes { max-height: 45vh; }
-    }
-
     @media print {
       @page { size: 13.333in 7.5in; margin: 0; }
       body { background: #fff; }
       .app { display: block; padding: 0; }
-      .stage { width: 13.333in; height: 7.5in; max-width: none; max-height: none; box-shadow: none; }
-      .slide { position: relative; display: flex !important; width: 13.333in; height: 7.5in; page-break-after: always; break-after: page; }
-      .controls, .notes-button, .notes { display: none !important; }
+      .stage { width: 13.333in; height: auto; box-shadow: none; overflow: visible; }
+      .slide { display: flex !important; width: 13.333in; height: 7.5in; break-after: page; }
+      .controls { display: none; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <div class="stage" id="stage" aria-label="Terraform Registry presentation">
-      <section class="slide active" data-lead="Design" aria-label="Slide 1 of 14">
-        <div class="content two-col">
-          <div class="cover-copy">
-            <h1>Terraform Registry</h1>
-            <p class="subtitle">A partnership built for impact—and what we are building next.</p>
-            <div class="byline">
-              <p><strong>Design + Engineering</strong></p>
-              <p class="small">A shared story of product impact, craft, and trust</p>
-            </div>
-          </div>
-          <div class="cover-ui">
-            <img class="cover-image" src="images/Public%20registry.png" alt="Redesigned public Terraform Registry landing page with search, provider and module browsing, and publisher self-service." />
-            <p class="cover-caption">Public Registry redesign</p>
-          </div>
-        </div>
-        <footer class="footer"><span>Terraform Registry · Partnership + impact</span><span>01</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>We’re here to share how the Registry work created product impact, how Design and Engineering partnered, and what we’re building next. Our story moves from the case for Artifact Control through the product work and ways of working that carried it forward.</p>
-        </aside>
-      </section>
-
-      <section class="slide" data-lead="Design" aria-label="Slide 2 of 14">
-        <div class="content two-col">
+    <div class="stage" aria-label="Terraform Registry presentation">
+      <section class="slide dark active" aria-label="Slide 1 of 10">
+        <p class="eyebrow">Terraform Registry · Design + Engineering</p>
+        <div class="content split">
           <div>
-            <h2>We made the case for Registry Artifact Control.</h2>
-            <p class="muted">Customer barriers became a roadmap conversation.</p>
-            <div class="metric-bar"><strong>4</strong><span>engineers on a dedicated foundation quarter</span></div>
-            <div class="quarter" aria-label="Evidence to roadmap sequence"><i></i><span></span><i></i><span></span><i></i></div>
-            <p class="small">Barrier → evidence → investment</p>
+            <h1 class="cover-title">A faster feedback loop.</h1>
+            <p class="cover-subtitle">How we moved two registries forward—together, with AI in the loop.</p>
+            <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
-          <div class="visual">
-            <span class="placeholder-marker">Placeholder image</span>
-            <div class="visual-inner">
-              <p class="kicker">The investment</p>
-              <h3>Controls that could unblock enterprise migration</h3>
-              <div class="rule"></div>
-              <p style="margin-top:18px"><span class="pill">Roadmap investment secured</span></p>
-              <p class="small">Customer barrier → product investment</p>
-            </div>
-          </div>
+          <div class="cover-visual"><img src="images/Public%20registry.png" alt="The redesigned public Terraform Registry"></div>
         </div>
-        <footer class="footer"><span>From customer barrier to product investment</span><span>02</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>We used customer barriers around Registry Artifact Control to build the business case and secure roadmap investment. That investment created space for a dedicated foundation quarter, with four engineers addressing technical debt that had been blocking the work. This moved the Registry from a recognized need to planned and staffed product work.</p>
-        </aside>
+        <div class="footer"><span>Delivery, craft, and what we’re learning</span><span>01</span></div>
+        <aside class="speaker-notes" hidden><h2>Opening · 45 seconds</h2><p><strong>Sanchita:</strong> We’re sharing a way of working, not an AI success formula. The Registry gives us a concrete example of how shared context, direct collaboration, and AI-assisted iteration helped us move work forward.</p><p><strong>Val:</strong> We’ll show what shipped, how the working loop changed, and what we’re still figuring out. We’ve left room for your questions.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Design" aria-label="Slide 3 of 14">
-        <h2 class="stage-title">Producers publish. Consumers build.</h2>
-        <div class="content" style="justify-content:center">
-          <div class="flow">
-            <div class="flow-step">
-              <svg class="line-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M5 13h30v22H5zM5 13l5-8h10l5 8" stroke="currentColor" stroke-width="1.5"/><path d="M12 20h16M12 26h16" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div class="flow-box"><strong>Producers</strong><span class="small">Publish · Maintain · Govern</span></div>
-              <p class="small">Modules · Providers · Components</p>
-            </div>
-            <div class="flow-arrow" aria-hidden="true">→</div>
-            <div class="flow-step">
-              <svg class="line-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 8h28v25H6zM12 14h16M12 20h16M12 26h9" stroke="currentColor" stroke-width="1.5"/><circle cx="29" cy="28" r="5" fill="white" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div class="flow-box"><strong>Registry</strong><span class="small">Shared catalog</span></div>
-              <p class="small">Public + private contexts</p>
-            </div>
-            <div class="flow-arrow" aria-hidden="true">→</div>
-            <div class="flow-step">
-              <svg class="line-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="14" cy="13" r="5" stroke="currentColor" stroke-width="1.5"/><circle cx="27" cy="13" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M4 33c1-7 5-10 10-10s9 3 10 10M20 33c1-7 4-10 8-10s7 3 8 10" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div class="flow-box"><strong>Consumers</strong><span class="small">Discover · Evaluate · Use</span></div>
-              <p class="small">Terraform configs → Apps</p>
-            </div>
+      <section class="slide" aria-label="Slide 2 of 10">
+        <p class="eyebrow">The product context</p>
+        <h2>Two registries. Different jobs. A more coherent experience.</h2>
+        <div class="content center">
+          <div class="two-up">
+            <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Discover + publish</span></div><img src="images/Public%20registry.png" alt="Redesigned public Registry landing page"></div>
+            <div class="screen"><div class="screen-label"><span>Private Registry</span><span class="muted">Use + govern</span></div><img src="images/Private%20Library.png" alt="Private Registry library showing modules"></div>
           </div>
-          <p class="small" style="margin:26px 0 0">The Registry serves both the teams that publish and govern—and the teams that discover and use.</p>
+          <p class="caption small muted">Shared patterns across public and private surfaces; clearer workflows for consumers and producers.</p>
         </div>
-        <footer class="footer"><span>Producer → Registry → Consumer</span><span>03</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>Producers publish, maintain, and govern modules, providers, and components. Consumers discover, evaluate, and use those artifacts in Terraform configurations that provision applications. The Registry is the shared catalog between the teams that publish and the teams that build with those artifacts.</p>
-        </aside>
+        <div class="footer"><span>Set the context</span><span>02</span></div>
+        <aside class="speaker-notes" hidden><h2>Product context · 1 minute</h2><p><strong>Sanchita:</strong> Consumers need to find and use trusted artifacts; producers need to publish and maintain them. The work clarified those distinct jobs while making the public and private experiences more consistent.</p><p><strong>Val:</strong> This was not a blank slate. We were evolving a mature product, its existing patterns, and the code behind it while roadmap work continued.</p></aside>
       </section>
 
-      <section class="slide dark" data-lead="Engineering" aria-label="Slide 4 of 14">
-        <div class="content" style="justify-content:center">
-          <p class="kicker">Not a two-week partnership</p>
-          <h2 class="stage-title">A focused redesign.<br>A much longer runway.</h2>
-          <div class="timeline" style="margin-top:5%">
-            <div class="timeline-step"><b>01</b><p>UX evidence + design debt</p></div>
-            <div class="timeline-step"><b>02</b><p>Technical foundation</p></div>
-            <div class="timeline-step"><b>03</b><p>Artifact Control</p></div>
-            <div class="timeline-step"><b>04</b><p>Public + private redesigns → GA</p></div>
+      <section class="slide" aria-label="Slide 3 of 10">
+        <p class="eyebrow">The longer arc</p>
+        <h2>Small investments built on each other.</h2>
+        <div class="content center">
+          <div class="timeline">
+            <div class="timeline-item"><div class="number">01</div><h3>Make the case</h3><p class="small">UX debt, research, and a workshop helped make the case for technical investment.</p></div>
+            <div class="timeline-item"><div class="number">02</div><h3>Build the foundation</h3><p class="small">A dedicated technical-debt quarter and private Registry redesigns alongside roadmap work.</p></div>
+            <div class="timeline-item"><div class="number">03</div><h3>Ship &amp; extend</h3><p class="small">A focused public reskin in under two weeks; Usage and Visibility Controls shipped.</p></div>
+            <div class="timeline-item"><div class="number">04</div><h3>Keep moving</h3><p class="small">Ownership Control is in technical discovery; Solar preparation is underway.</p></div>
           </div>
-          <p class="small" style="margin-top:22px">The focused public-registry redesign took under two weeks—not the whole partnership.</p>
+          <p class="caption small muted">A sequence, not a single sprint or a claim that every stream happened one after another.</p>
         </div>
-        <footer class="footer"><span>Engineering leads on the foundation context</span><span>04</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>This took longer than the focused redesign. Earlier UX work exposed friction; design debt and foundation improvements built the conditions to take on Artifact Control. From there, context carried into the Registry redesign, and the public and private experiences reached GA. The public Registry redesign itself was a focused under-two-weeks effort within a much longer partnership and product journey.</p>
-        </aside>
+        <div class="footer"><span>Foundation → delivery → next questions</span><span>03</span></div>
+        <aside class="speaker-notes" hidden><h2>Timeline · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed incrementally alongside feature work. The public reskin was a focused effort of under two weeks—not the timeline for the whole partnership.</p><p><strong>Val:</strong> Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Avoid naming dates or phases we haven’t verified.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Design" aria-label="Slide 5 of 14">
-        <h2 class="stage-title">Trust lets us challenge the work—not each other.</h2>
-        <div class="content" style="justify-content:center">
-          <div class="two-col">
-            <div class="icon-tile">
-              <svg class="line-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M5 7h30v22H19l-8 6v-6H5z" stroke="currentColor" stroke-width="1.5"/><path d="M11 14h18M11 20h12" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div><p class="kicker">Design</p><p>Make user intent visible. Share work early.</p></div>
-            </div>
-            <div class="icon-tile">
-              <svg class="line-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M6 9h28v23H6zM12 15h16M12 21h11" stroke="currentColor" stroke-width="1.5"/><path d="m25 27 3 3 7-8" stroke="currentColor" stroke-width="1.5"/></svg>
-              <div><p class="kicker">Engineering</p><p>Surface constraints. Bring options, not just blockers.</p></div>
-            </div>
+      <section class="slide tint" aria-label="Slide 4 of 10">
+        <p class="eyebrow">What the work produced</p>
+        <h2>More than a reskin.</h2>
+        <div class="content impact">
+          <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p><p class="small muted" style="margin-top:16px">Not the duration of the entire redesign or roadmap.</p></div>
+          <div class="facts">
+            <div class="fact"><strong>Shipped</strong><p>Private-screen redesigns, Usage and Visibility Controls, and a public redesign.</p></div>
+            <div class="fact"><strong>Customer value</strong><p>Developer advocates use the controls to communicate HCP Terraform value; the work supported a renewal and escalation resolution.</p></div>
+            <div class="fact"><strong>Foundation</strong><p>Bulma removed; public and private Registry prepared for Project Solar and dark mode.</p></div>
           </div>
-          <div class="rule" style="margin:24px 0"></div>
-          <p><strong>We keep craft ownership—and put the outcome first.</strong></p>
-          <p class="small">Show work → Surface constraints → Explore options → Decide</p>
-          <p class="small"><strong>We make decisions in async and live conversations.</strong></p>
         </div>
-        <footer class="footer"><span>Consul was our first project together</span><span>05</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads · shared story</h2><p>We first partnered on Consul. That relationship grew through sharing unfinished work, surfacing constraints early, and exploring options together. Design brings user intent and prototypes; Engineering turns that into robust implementation. Those ownership lines remain clear while we help each other. Our distributed team maintains shared context through async updates and live conversations. Backend colleagues have also been focused on reliability and the Instana migration.</p>
-        </aside>
+        <div class="footer"><span>Delivery and outcomes · not an AI-only claim</span><span>04</span></div>
+        <aside class="speaker-notes" hidden><h2>Results · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> The under-two-week figure applies to the focused public reskin. Across a longer period we also shipped private-screen redesigns and Artifact Usage and Visibility Controls. Developer advocates use the controls as part of the HCP Terraform value story. The work contributed to a customer renewal and resolving escalations; don’t claim it was the sole cause.</p><p><strong>Val:</strong> Bulma removal is complete; preparation for Project Solar and dark mode is not the same as claiming either has shipped.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Engineering" aria-label="Slide 6 of 14">
-        <h2 class="stage-title">Three controls. Three different jobs.</h2>
-        <div class="content" style="justify-content:center">
-          <div class="control-layout">
-            <div class="control-list">
-              <div class="control-row"><h3>Usage</h3><p>Approve versions by environment; block unapproved runs before plan.</p><span class="pill">Private beta</span></div>
-              <div class="control-row"><h3>Visibility</h3><p>Control which artifacts are visible.</p><span class="pill success">GA</span></div>
-              <div class="control-row"><h3>Ownership</h3><p>Establish who owns an artifact.</p><span class="pill progress">In progress</span></div>
-            </div>
-            <figure class="guardrail-visual">
-              <img src="images/enforce%20guardrails.png" alt="Illustrative Terraform run flow showing a policy checkpoint between plan and apply." />
-              <figcaption>Illustrative guardrail checkpoint—not the exact Usage Control sequence.</figcaption>
-            </figure>
+      <section class="slide tint" aria-label="Slide 5 of 10">
+        <p class="eyebrow">The working method</p>
+        <h2>We brought decisions closer to the work.</h2>
+        <div class="content center">
+          <div class="loop">
+            <div class="loop-step"><span class="number">01</span><h3>Make intent concrete</h3><p class="small">Design brings the user goal, context, and an interaction to discuss.</p></div>
+            <div class="loop-step"><span class="number">02</span><h3>Explore in code</h3><p class="small">Engineering works with existing patterns and AI-assisted iteration.</p></div>
+            <div class="loop-step"><span class="number">03</span><h3>Review together</h3><p class="small">Constraints and alternatives meet UX judgment in the same conversation.</p></div>
+            <div class="loop-step"><span class="number">04</span><h3>Decide &amp; ship</h3><p class="small">Refine, review, test, and move work forward incrementally.</p></div>
           </div>
-          <p class="small" style="margin:16px 0 0">Distinct controls—not phases of one flow. Usage Control blocks unapproved versions before plan.</p>
+          <p class="statement">AI helps us iterate. <strong>People still own the judgment.</strong></p>
         </div>
-        <footer class="footer"><span>Usage · Visibility · Ownership</span><span>06</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>Artifact Control has three separate areas. Usage Control approves versions by environment and blocks unapproved versions before plan; it is currently in private beta. Visibility Control manages which artifacts are visible and has reached GA. Ownership Control, which clarifies who owns an artifact, is in progress. The guardrails illustration is a high-level policy-checkpoint example, not the exact Usage Control sequence.</p>
-        </aside>
+        <div class="footer"><span>Shared loop · distinct craft expertise</span><span>05</span></div>
+        <aside class="speaker-notes" hidden><h2>Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Rather than waiting until every detail is fully specified, bring intent and the interaction into a shared conversation early. The public and private efforts used different design methods; this is the common collaboration pattern, not a claim that every project followed the same steps.</p><p><strong>Val:</strong> Engineering tests feasibility, suggests alternatives, and reviews the resulting implementation. AI can accelerate iteration, but it does not decide the right UX or remove review and testing.</p></aside>
       </section>
 
-      <section class="slide blue-wash" data-lead="Engineering" aria-label="Slide 7 of 14">
-        <div class="content two-col">
-          <div>
-            <h2>Preparing the Registry for what comes next.</h2>
-            <p>We removed Bulma from the Registry front end.</p>
-            <p class="small">Now we’re preparing the Registry for Carbonized HDS components and dark mode in alignment with Project Solar.</p>
-            <span class="pill progress">Preparation in progress</span>
+      <section class="slide dark" aria-label="Slide 6 of 10">
+        <p class="eyebrow">Engineering-led · workflow</p>
+        <h2>What makes the AI-assisted loop useful?</h2>
+        <div class="content engineering">
+          <div class="engineering-list">
+            <div class="engineering-row"><h3>Context before generation</h3><p class="small">Product intent, existing code, and design-system examples.</p></div>
+            <div class="engineering-row"><h3>Inspect the result</h3><p class="small">Compare the first pass with the real interaction and implementation.</p></div>
+            <div class="engineering-row"><h3>Keep expertise in control</h3><p class="small">Review behavior, constraints, accessibility, and code before shipping.</p></div>
           </div>
-          <figure class="solar-visual">
-            <img src="images/public%20registry%20carbonized.png" alt="Dark-mode Terraform Registry visual illustrating Registry preparation aligned with Project Solar." />
-            <figcaption>Registry dark-mode visual · alignment context</figcaption>
-          </figure>
+          <div class="terminal">
+            <div class="terminal-top">Val’s walkthrough</div>
+            <p class="terminal-line"><span>01</span> Setup &amp; context</p>
+            <p class="terminal-line"><span>02</span> A real task or change</p>
+            <p class="terminal-line"><span>03</span> Review, correction &amp; checks</p>
+          </div>
         </div>
-        <footer class="footer"><span>Registry preparation · aligned with Project Solar</span><span>07</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>We removed Bulma from the Registry front end. We are now preparing the Registry for Carbonized HDS components and dark mode in alignment with Project Solar. Our work is focused on Registry preparation and alignment, alongside the separate Project Solar effort.</p>
-        </aside>
+        <div class="footer"><span>Protected time for Engineering</span><span>06</span></div>
+        <aside class="speaker-notes" hidden><h2>Val’s setup and workflow · 2 minutes 30 seconds</h2><p><strong>Val leads:</strong> Show your actual VS Code and GitHub Copilot setup, what context you provide, and how that context relates to existing Registry and HDS patterns. Explain the process in your own words rather than implying an unverified configuration.</p><p>Walk through a real task: the input, the first output, what you reviewed or corrected, and the checks before code was ready. A sanitized prompt, diff, or screen recording would make this tangible; choose one you’re comfortable sharing. Say what accelerated and what remained your responsibility. No invented measurements or agent discoveries.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Engineering" aria-label="Slide 8 of 14">
-        <div class="content two-col">
-          <div>
-            <p class="kicker">Valeriia · Engineering</p>
-            <h2>Learn fast.<br>Find leverage.<br>Set the pace.</h2>
-            <p class="small">Make the codebase legible. Ship what moves the team forward.</p>
+      <section class="slide" aria-label="Slide 7 of 10">
+        <p class="eyebrow">Engineering-led · team adoption</p>
+        <h2>The workflow matters more when the team can use it.</h2>
+        <div class="content center">
+          <div class="three-up">
+            <div class="panel"><span class="pill">Start</span><h3>Make the setup accessible</h3><p class="small">Val helped the team get started with VS Code and GitHub Copilot.</p></div>
+            <div class="panel"><span class="pill">Share</span><h3>Bring context into the work</h3><p class="small">Use existing product patterns and examples rather than asking AI to guess.</p></div>
+            <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep the useful practices; discuss where setup, output, or review still creates friction.</p></div>
           </div>
-          <div class="code" aria-label="Placeholder image: Valeriia's engineering implementation example">
-            <span class="placeholder-marker">Placeholder image</span>
-            <div class="comment"># Valeriia's implementation story</div>
-            <div><span class="purple">context</span> = <span class="orange">"Registry codebase"</span></div>
-            <div><span class="purple">constraint</span> = <span class="orange">"[real example]"</span></div>
-            <div><span class="purple">change</span> = <span class="green">"[what Valeriia implemented]"</span></div>
-            <div><span class="purple">unblocked</span> = <span class="green">"[team / user outcome]"</span></div>
-            <br>
-            <div class="comment"># Valeriia's implementation example</div>
-          </div>
+          <p class="caption small muted">The goal is a repeatable team practice—not a single person’s perfect setup.</p>
         </div>
-        <footer class="footer"><span>Valeriia leads · implementation example</span><span>08</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads · Valeriia</h2><p>Valeriia learned the Registry codebase quickly, built enough context to make an impact, and helped set the pace for the team. She brings her engineering perspective to decisions about where a change can help, how to implement it within existing patterns, and how it moves the team’s work forward.</p>
-        </aside>
+        <div class="footer"><span>From individual practice to team learning</span><span>07</span></div>
+        <aside class="speaker-notes" hidden><h2>Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Engineering" aria-label="Slide 9 of 14">
-        <h2 class="stage-title">Recovery, SLA, and internal tooling.</h2>
-        <div class="content has-placeholder" style="justify-content:center">
-          <span class="placeholder-marker">Placeholder image · recovery UI</span>
-          <div class="three-col">
-            <div class="card accent-card">
-              <p class="kicker">Customer recovery</p>
-              <h3>Public Registry UI</h3>
-              <p class="small">A self-service path back to resolution.</p>
-              <span class="pill">Customer-facing</span>
-            </div>
-            <div class="card accent-card">
-              <p class="kicker">Support SLA</p>
-              <h3>Under review</h3>
-              <p class="small">Leadership + Legal are reviewing support expectations.</p>
-              <span class="pill progress">Not finalized</span>
-            </div>
-            <div class="card accent-card">
-              <p class="kicker">Support tooling</p>
-              <h3>Support CLI</h3>
-              <p class="small">In development to support the Registry team.</p>
-              <span class="pill progress">In progress</span>
-            </div>
+      <section class="slide" aria-label="Slide 8 of 10">
+        <p class="eyebrow">Building beyond the immediate delivery</p>
+        <h2>Ship the work. Leave the product stronger.</h2>
+        <div class="content center">
+          <div class="three-up">
+            <div class="panel"><span class="pill live">Shipped</span><h3>Usage + visibility</h3><p class="small">Controls that give customers more ways to govern Registry artifacts.</p></div>
+            <div class="panel"><span class="pill discovery">Technical discovery</span><h3>Ownership Control</h3><p class="small">Exploring the next part of an infrastructure governance model.</p></div>
+            <div class="panel"><span class="pill">Foundation</span><h3>Future-ready UI</h3><p class="small">Bulma removed; preparing for Solar and discussing technical changes beyond the current scope.</p></div>
           </div>
-          <p class="small" style="margin-top:18px">A future support-queue handoff is a possibility—not a decision.</p>
+          <p class="caption small muted">We also added practical improvements such as the versions list while continuing roadmap delivery.</p>
         </div>
-        <footer class="footer"><span>Separate customer recovery, SLA review, and internal tooling</span><span>09</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>The support story has three connected areas. The Public Registry UI provides a self-service recovery path for community members. The support SLA that sets expectations for public Registry requests is under review with leadership and Legal. Separately, the Packer team is building a Support CLI for the Registry; that work is in progress. A future support-queue handoff remains a possibility, not a decision.</p>
-        </aside>
+        <div class="footer"><span>Product capability + technical direction</span><span>08</span></div>
+        <aside class="speaker-notes" hidden><h2>Scope and direction · 1 minute</h2><p><strong>Sanchita:</strong> Usage and Visibility Controls have shipped. Ownership is a discovery effort, not a committed delivery date. Explain how those controls support a broader governance direction without implying that the model is complete.</p><p><strong>Val:</strong> Discuss the versions list, the removal of Bulma, and one technical conversation that looks beyond the immediate project if useful. Separate future requests from committed work.</p></aside>
       </section>
 
-      <section class="slide" data-lead="Design" aria-label="Slide 10 of 14">
-        <h2 class="stage-title">Work in progress—and what could follow.</h2>
-        <div class="content three-col" style="align-content:center">
-          <div class="card">
-            <span class="pill progress">In progress</span>
-            <h3 style="margin-top:20px">Ownership Control</h3>
-            <p class="small">Clarifying who owns a Registry artifact.</p>
-          </div>
-          <div class="card">
-            <span class="pill progress">In progress</span>
-            <h3 style="margin-top:20px">Project Solar alignment</h3>
-            <p class="small">Registry preparation for Carbonized HDS components and dark mode.</p>
-          </div>
-          <div class="card">
-            <span class="pill future">Future</span>
-            <h3 style="margin-top:20px">Private Provider Publishing</h3>
-            <p class="small">Future scope; no schedule implied.</p>
+      <section class="slide" aria-label="Slide 9 of 10">
+        <p class="eyebrow">What we’re learning</p>
+        <h2>Speed comes from the loop—not the tool alone.</h2>
+        <div class="content center">
+          <div class="takeaways">
+            <div class="takeaway"><b>01</b><div><h3>Share context early.</h3><p class="small">The user goal, existing patterns, and constraints make the first iteration more useful.</p></div></div>
+            <div class="takeaway"><b>02</b><div><h3>Review together while decisions are still flexible.</h3><p class="small">Design and Engineering can challenge the work without handing off ownership.</p></div></div>
+            <div class="takeaway"><b>03</b><div><h3>Keep learning where AI helps—and where it doesn’t.</h3><p class="small">We’re still working out the right context, verification, and team practices.</p></div></div>
           </div>
         </div>
-        <footer class="footer"><span>Now → future</span><span>10</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>Ownership Control and Registry preparation aligned with Project Solar are in progress. Private Provider Publishing is future scope. Project Solar is a separate effort; our contribution is preparing the Registry for alignment with its direction.</p>
-        </aside>
+        <div class="footer"><span>Takeaways to adapt, not a universal playbook</span><span>09</span></div>
+        <aside class="speaker-notes" hidden><h2>Lessons · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Explain the value of bringing the user goal and a concrete interaction into the conversation early, and how Design remained involved through implementation.</p><p><strong>Val:</strong> Explain the engineering judgment and checks that still matter. Share one limitation or open question from your actual experience: for example, what context is worth maintaining or when reviewing generated output takes more effort. Do not invent a failure or measured speedup.</p></aside>
       </section>
 
-      <section class="slide dark prototype-workflow" data-lead="Design" aria-label="Slide 11 of 14">
-        <h2 class="stage-title">Start with context. Then move quickly.</h2>
-        <div class="content" style="justify-content:center">
-          <div class="two-col">
-            <div>
-              <p class="kicker">Before</p>
-              <p>Ashley’s Bootstrap foundation<br>React prototypes in Storybook</p>
-              <p class="small">A useful foundation for that stage of the work.</p>
-            </div>
-            <div>
-              <p class="kicker blue">Now</p>
-              <div class="flow" style="align-items:center">
-                <div class="flow-step"><div class="flow-box"><strong>Existing Figma</strong><span class="small">Context + intent</span></div></div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step"><div class="flow-box"><strong>Figma Make</strong><span class="small">Workable prototype</span></div></div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step"><div class="flow-box"><strong>VS Code</strong><span class="small">Copilot + agent</span></div></div>
-              </div>
-            </div>
-          </div>
-          <div class="rule" style="margin:24px 0"></div>
-          <p class="small">Publish to GitHub Pages → iterate on branches. A mature Registry needs its existing patterns—not a blank-slate guess.</p>
+      <section class="slide dark" aria-label="Slide 10 of 10">
+        <p class="eyebrow">Discussion</p>
+        <div class="content center">
+          <h1>What could your team<br>try together?</h1>
+          <p class="discussion">Where would earlier context, a shared review, or AI-assisted iteration make a real difference?</p>
         </div>
-        <footer class="footer"><span>Ground prototypes in established Registry context</span><span>11</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>We previously used Ashley’s Bootstrap foundation and built React prototypes in Storybook. That was useful at the time. The Registry has substantial existing context; starting from scratch led an agent to mix established patterns. Today we start from existing Figma context, create a workable prototype in Figma Make, then use VS Code, GitHub Copilot, and the selected agent to publish to GitHub Pages and iterate through branches. The approach balances speed with respect for established patterns.</p>
-        </aside>
-      </section>
-
-      <section class="slide blue-wash" data-lead="Engineering" aria-label="Slide 12 of 14">
-        <h2 class="stage-title">Accelerate the first pass.<br>Keep people in the loop.</h2>
-        <div class="content" style="justify-content:center">
-          <div class="flow">
-            <div class="flow-step">
-              <div class="flow-box"><strong>Good input</strong><span class="small">Frames · States · Context</span></div>
-              <p class="small">Start with the real product.</p>
-            </div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">
-              <div class="flow-box"><strong>Agent assist</strong><span class="small">Scaffolding · First pass · Iteration</span></div>
-              <p class="small">Speed up individual work.</p>
-            </div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">
-              <div class="flow-box"><strong>Human judgment</strong><span class="small">Intent · HDS fit · Quality</span></div>
-              <p class="small">Own the decisions and result.</p>
-            </div>
-          </div>
-        </div>
-        <footer class="footer"><span>Useful acceleration—not autonomous delivery</span><span>12</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>Agents can accelerate individual tasks when they receive the context needed to work within the product: existing frames, states, and Registry conventions. They can support scaffolding, an initial implementation, and iteration. Design and Engineering remain accountable for intent, interaction quality, technical fit, and the final implementation.</p>
-        </aside>
-      </section>
-
-      <section class="slide dark" data-lead="Engineering" aria-label="Slide 13 of 14">
-        <div class="content" style="justify-content:center;align-items:center;text-align:center">
-          <h2 style="max-width:15ch">Trust + communication<br><span class="blue">= velocity.</span></h2>
-          <p class="small" style="max-width:38ch">Show unfinished work. Challenge ideas without blame. Share progress across time zones. Decide in async and live conversations.</p>
-        </div>
-        <footer class="footer"><span>Clear craft · shared context · momentum</span><span>13</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Engineering leads</h2><p>Trust and communication have helped us build velocity together. Sharing unfinished work, challenging ideas without blame, and keeping craft ownership clear let us move with shared purpose. Async updates preserve context across time zones, while live conversations help us work through decisions.</p>
-        </aside>
-      </section>
-
-      <section class="slide dark" data-lead="Design" aria-label="Slide 14 of 14">
-        <div class="content" style="justify-content:center;align-items:center;text-align:center">
-          <h2>Questions?</h2>
-          <p class="small" style="max-width:38ch">Where could visible work, clear ownership, and early feedback help us move together?</p>
-        </div>
-        <footer class="footer"><span>Thank you</span><span>14</span></footer>
-        <aside class="speaker-notes" hidden>
-          <h2>Design leads</h2><p>We’d love your questions and reflections, especially on how we can keep sharing work early, clarify constraints, and help Design and Engineering move forward together.</p>
-        </aside>
+        <div class="footer"><span>Questions · 3–5 minutes</span><span>10</span></div>
+        <aside class="speaker-notes" hidden><h2>Discussion · 3–5 minutes</h2><p>Invite questions about the product work, Val’s setup and team adoption, or the boundaries of the approach. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Suggested spoken portion: approximately 11 minutes 45 seconds; with 3–5 minutes of discussion, allow roughly 15–17 minutes total. Shorten the walkthrough if the slot is closer to 10 minutes.</p></aside>
       </section>
     </div>
-
     <nav class="controls" aria-label="Presentation controls">
-      <button type="button" id="previous" aria-label="Previous slide">←</button>
-      <span id="counter" aria-live="polite">01 / 14</span>
-      <div class="progress-track" role="progressbar" aria-label="Presentation progress" aria-valuemin="1" aria-valuemax="14" aria-valuenow="1"><div class="progress-fill" id="progress"></div></div>
-      <button type="button" id="next" aria-label="Next slide">→</button>
-      <span class="small">← → to navigate · N for notes · F for fullscreen</span>
+      <button id="previous" type="button" aria-label="Previous slide">←</button>
+      <span id="counter" aria-live="polite"></span>
+      <button id="next" type="button" aria-label="Next slide">→</button>
+      <button class="notes-button" id="open-notes" type="button">Presenter notes</button>
+      <span class="control-hint">← → navigate · F fullscreen</span>
+      <span id="notes-status" role="status"></span>
     </nav>
   </main>
-
-  <button type="button" class="notes-button" id="notesToggle">Open presenter notes window</button>
-  <aside class="notes" id="notesPanel" hidden aria-live="polite"></aside>
-
+  <main id="presenter" aria-label="Presenter notes">
+    <div class="notes-nav">
+      <button id="notes-previous" type="button">Previous</button>
+      <button id="notes-next" type="button">Next</button>
+      <span id="notes-counter" class="notes-meta"></span>
+    </div>
+    <div id="notes-content"></div>
+  </main>
   <script>
     (() => {
       const slides = [...document.querySelectorAll(".slide")];
       const notesMode = new URLSearchParams(location.search).has("notes");
-      const renderMode = new URLSearchParams(location.search).has("render");
       const previous = document.getElementById("previous");
       const next = document.getElementById("next");
       const counter = document.getElementById("counter");
-      const progress = document.getElementById("progress");
-      const progressTrack = document.querySelector(".progress-track");
-      const notesToggle = document.getElementById("notesToggle");
-      const notesPanel = document.getElementById("notesPanel");
-      const notesChannel = typeof BroadcastChannel === "undefined"
-        ? null
-        : new BroadcastChannel("terraform-registry-presenter-notes");
+      const notesPrevious = document.getElementById("notes-previous");
+      const notesNext = document.getElementById("notes-next");
+      const notesCounter = document.getElementById("notes-counter");
+      const notesContent = document.getElementById("notes-content");
+      const channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel("terraform-registry-story-draft");
       let notesWindow = null;
       let index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.match(/slide=(\d+)/)?.[1] || 1) - 1));
 
-      function render() {
+      function render(broadcast = true) {
         slides.forEach((slide, i) => {
           slide.classList.toggle("active", i === index);
           slide.setAttribute("aria-hidden", String(i !== index));
         });
-        counter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
-        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-        progressTrack.setAttribute("aria-valuenow", String(index + 1));
-        previous.disabled = index === 0;
-        next.disabled = index === slides.length - 1;
+        const label = `${String(index + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+        counter.textContent = label;
+        notesCounter.textContent = label;
+        notesContent.innerHTML = slides[index].querySelector(".speaker-notes").innerHTML;
+        previous.disabled = notesPrevious.disabled = index === 0;
+        next.disabled = notesNext.disabled = index === slides.length - 1;
         history.replaceState(null, "", `#slide=${index + 1}`);
-        const lead = slides[index].dataset.lead;
-        const notes = slides[index].querySelector(".speaker-notes");
-        notesPanel.innerHTML = `
-          <div class="notes-controls">
-            <span>Presenter view · keep this window off the shared screen</span>
-            <span>${String(index + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}</span>
-            <button type="button" data-notes-prev aria-label="Previous notes" ${index === 0 ? "disabled" : ""}>Previous</button>
-            <button type="button" data-notes-next aria-label="Next notes" ${index === slides.length - 1 ? "disabled" : ""}>Next</button>
-          </div>
-          <div class="notes-content">
-            <h2>${notes.querySelector("h2").textContent}</h2>
-            <p class="lead">Slide ${index + 1} · ${lead} leads</p>
-            ${notes.querySelector("p").outerHTML}
-          </div>`;
-
-        if (notesMode) {
-          notesPanel.hidden = false;
-          notesPanel.querySelector("[data-notes-prev]").addEventListener("click", () => move(-1));
-          notesPanel.querySelector("[data-notes-next]").addEventListener("click", () => move(1));
-        }
-        if (notesChannel) {
-          notesChannel.postMessage({ slide: index + 1 });
-        }
+        if (broadcast) channel?.postMessage({ slide: index + 1 });
       }
 
       function move(direction) {
@@ -842,56 +374,42 @@
 
       previous.addEventListener("click", () => move(-1));
       next.addEventListener("click", () => move(1));
-      notesToggle.addEventListener("click", () => {
+      notesPrevious.addEventListener("click", () => move(-1));
+      notesNext.addEventListener("click", () => move(1));
+      document.getElementById("open-notes").addEventListener("click", () => {
         if (notesWindow && !notesWindow.closed) {
           notesWindow.focus();
           return;
         }
-        const notesUrl = new URL(location.href);
-        notesUrl.searchParams.set("notes", "1");
-        notesUrl.hash = `slide=${index + 1}`;
-        notesWindow = window.open(notesUrl, "TerraformRegistryPresenterNotes", "popup,width=760,height=850");
-        if (!notesWindow) {
-          notesToggle.textContent = "Allow pop-ups, then open presenter notes";
-          notesToggle.setAttribute("aria-label", "Pop-up blocked. Allow pop-ups and try again.");
-        }
+        const url = new URL(location.href);
+        url.searchParams.set("notes", "1");
+        url.hash = `slide=${index + 1}`;
+        notesWindow = window.open(url, "RegistryStoryPresenterNotes", "popup,width=760,height=850");
+        document.getElementById("notes-status").textContent = notesWindow ? "" : "Allow pop-ups to open presenter notes.";
       });
-      notesChannel?.addEventListener("message", event => {
-        if (Number.isInteger(event.data?.slide)) {
-          const synchronizedIndex = Math.max(0, Math.min(slides.length - 1, event.data.slide - 1));
-          if (synchronizedIndex === index) return;
-          index = synchronizedIndex;
-          render();
-        }
+      channel?.addEventListener("message", event => {
+        if (!Number.isInteger(event.data?.slide)) return;
+        index = Math.max(0, Math.min(slides.length - 1, event.data.slide - 1));
+        render(false);
       });
-      if (notesMode) document.body.classList.add("notes-mode");
-      if (renderMode) document.body.classList.add("render-mode");
+      window.addEventListener("hashchange", () => {
+        index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.match(/slide=(\d+)/)?.[1] || 1) - 1));
+        render();
+      });
       document.addEventListener("keydown", event => {
-        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest("button")) return;
         if (["ArrowRight", "PageDown", " "].includes(event.key)) {
           event.preventDefault();
           move(1);
         } else if (["ArrowLeft", "PageUp"].includes(event.key)) {
           event.preventDefault();
           move(-1);
-        } else if (event.key === "Home") {
-          index = 0;
-          render();
-        } else if (event.key === "End") {
-          index = slides.length - 1;
-          render();
-        } else if (event.key.toLowerCase() === "n") {
-          if (!notesMode) notesToggle.click();
-        } else if (event.key.toLowerCase() === "f") {
+        } else if (event.key.toLowerCase() === "f" && !notesMode) {
           if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
           else document.exitFullscreen?.();
         }
       });
-      window.addEventListener("hashchange", () => {
-        const requested = Number(location.hash.match(/slide=(\d+)/)?.[1] || 1);
-        index = Math.max(0, Math.min(slides.length - 1, requested - 1));
-        render();
-      });
+      if (notesMode) document.body.classList.add("notes-mode");
       render();
     })();
   </script>
