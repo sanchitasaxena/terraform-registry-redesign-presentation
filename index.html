@@ -60,6 +60,13 @@
     .title-slide { isolation: isolate; }
     .title-content { width: 61%; position: relative; z-index: 1; }
     .title-art { position: absolute; inset: 0 0 0 auto; width: 42%; height: 100%; pointer-events: none; }
+    .thread-accent { position: absolute; fill: none; pointer-events: none; opacity: .2; }
+    .thread-accent path { fill: none; stroke: #4589ff; stroke-width: 2; }
+    .thread-accent path + path { stroke: #a6c8ff; }
+    .thread-accent-top { top: 2%; right: 5%; width: 16%; height: 24%; }
+    .thread-accent-side { top: 26%; right: 5%; width: 22%; height: 58%; opacity: .16; }
+    .slide.tint .thread-accent path { stroke: #0f62fe; }
+    .slide.tint .thread-accent path + path { stroke: #4589ff; }
     .cover-title { max-width: 10ch; font-size: clamp(40px, 6.2vw, 90px); line-height: 1; }
     .cover-subtitle { max-width: 30ch; margin-top: 6%; color: #c6c6c6; font-size: clamp(16px, 1.7vw, 25px); }
     .cover-byline { margin-top: 9%; padding-top: 4%; border-top: 1px solid #525252; color: #c6c6c6; }
@@ -76,9 +83,9 @@
     .cover-loop .loop-action { fill: #fff; font: 500 20px var(--font); }
     .cover-loop .loop-detail { fill: #c6c6c6; font: 14px var(--font); }
     .cover-loop .loop-center { fill: #fff; font: 500 17px var(--font); }
-    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; align-items: start; }
+    .public-registry-screen { align-self: center; width: 100%; max-width: 720px; }
     .screen { min-width: 0; }
-    .screen img { display: block; width: 100%; height: clamp(150px, 21vw, 310px); object-fit: cover; object-position: top; border: 1px solid var(--line); }
+    .screen img { display: block; width: 100%; height: clamp(220px, 25vw, 360px); object-fit: contain; background: #fff; border: 1px solid var(--line); }
     .screen-label { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 8px; font: 600 clamp(10px, .95vw, 14px)/1.2 var(--mono); text-transform: uppercase; }
     .caption { margin-top: 2%; }
     .resource-links { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 3%; }
@@ -87,6 +94,7 @@
     .pill { display: inline-block; padding: 4px 8px; color: #0043ce; background: var(--accent-light); font: 400 clamp(10px, .85vw, 12px)/1.2 var(--mono); }
     .pill.live { color: #0e6027; background: #defbe6; }
     .pill.discovery { color: #684e00; background: #fff1c7; }
+    .tint .panel { background: #fff; }
     .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 3%; }
     .timeline-item { padding: 18px 18px 0 0; border-top: 3px solid var(--accent); }
     .timeline-item + .timeline-item { padding-left: 18px; border-left: 1px solid var(--line); }
@@ -100,6 +108,21 @@
     .fact { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
     .fact strong { font-size: clamp(13px, 1.25vw, 18px); }
     .fact p { color: var(--muted); font-size: clamp(12px, 1.1vw, 16px); }
+    .support-case > h2 { max-width: 34ch; margin-bottom: 1%; }
+    .support-subtitle { margin-bottom: 1.5%; color: #c6c6c6; font-size: clamp(14px, 1.25vw, 18px); }
+    .support-layout { display: grid; grid-template-columns: 1.65fr 1fr; gap: 2%; align-items: stretch; }
+    .support-shot { min-width: 0; margin: 0; }
+    .support-shot figcaption { margin-bottom: 6px; font: 400 clamp(10px, .9vw, 13px)/1.2 var(--mono); color: var(--muted); }
+    .support-shot img { display: block; width: 100%; height: clamp(160px, 18vw, 235px); object-fit: cover; border: 1px solid var(--line); }
+    .support-shot.registry img { object-fit: contain; object-position: center; background: #fff; }
+    .support-metrics { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 18px; border-top: 3px solid var(--accent); background: #262626; }
+    .support-metrics-label { color: #a6c8ff; font: 400 clamp(10px, .9vw, 13px)/1.3 var(--mono); }
+    .support-counts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+    .support-counts strong { display: block; color: #fff; font-size: clamp(32px, 4vw, 56px); font-weight: 400; line-height: 1; }
+    .support-counts span { color: #c6c6c6; font: 400 clamp(11px, 1vw, 14px)/1.4 var(--mono); text-transform: uppercase; }
+    .support-metrics a { margin-top: 4px; color: #a6c8ff; font-size: clamp(11px, 1vw, 14px); line-height: 1.35; text-underline-offset: 3px; }
+    .support-metrics-duration { margin-top: 8px; color: #c6c6c6; font-size: clamp(10px, .9vw, 13px); line-height: 1.3; }
+    .support-sequence { margin-top: 1.5%; color: #c6c6c6; }
     .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1%; margin-top: 4%; }
     .loop-step { min-height: 130px; padding: 16px; background: #fff; border-top: 3px solid var(--accent); }
     .loop-step h3 { margin: 12px 0 8px; }
@@ -119,6 +142,7 @@
     .panel h3 { margin: 12px 0 10px; }
     .panel p { color: var(--muted); }
     .takeaways { display: grid; gap: 0; margin-top: 1%; }
+    .lessons .takeaways { max-width: 70%; }
     .takeaway { display: grid; grid-template-columns: 45px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
     .takeaway b { color: var(--accent); font: 400 clamp(18px, 2vw, 28px)/1 var(--mono); }
     .takeaway h3 { margin-bottom: 5px; }
@@ -128,18 +152,7 @@
     .controls button { min-width: 34px; min-height: 32px; border: 1px solid #8d8d8d; background: #fff; color: #161616; cursor: pointer; }
     button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     .controls button:disabled { opacity: .4; cursor: default; }
-    .controls .notes-button { padding: 0 11px; }
     .control-hint { margin-left: 5px; }
-    #notes-status { color: #743817; }
-    #presenter { display: none; }
-    body.notes-mode { background: #fff; }
-    body.notes-mode .app { display: none; }
-    body.notes-mode #presenter { display: block; max-width: 760px; margin: 0 auto; padding: 32px; }
-    #presenter .notes-nav { display: flex; gap: 12px; align-items: center; margin-bottom: 32px; }
-    #presenter button { padding: 8px 12px; border: 1px solid #8d8d8d; background: #fff; cursor: pointer; }
-    #presenter h2 { margin: 10px 0 20px; font-size: 30px; }
-    #presenter p { margin-bottom: 16px; font-size: 17px; }
-    #presenter .notes-meta { color: var(--accent); font: 400 13px var(--mono); }
     @media (max-width: 700px) {
       .app { display: block; padding: 0; }
       .stage { width: 100%; aspect-ratio: auto; height: auto; min-height: calc(100vh - 58px); overflow: visible; }
@@ -148,6 +161,9 @@
       .content { min-height: 0; }
       .title-content, .closing-content { width: 100%; }
       .title-art { width: 46%; opacity: .16; }
+      .thread-accent-top { top: 1%; right: 3%; width: 18%; height: 16%; }
+      .thread-accent-side { top: 32%; right: 2%; width: 24%; height: 48%; opacity: .1; }
+      .lessons .takeaways { max-width: 78%; }
       .presenter-label { bottom: 24px; left: 24px; }
       .impact, .engineering { grid-template-columns: 1fr; gap: 20px; }
       .diagram-visual { flex: none; }
@@ -159,6 +175,9 @@
       .three-up { grid-template-columns: 1fr; gap: 10px; }
       .panel { padding: 14px; }
       .fact { padding: 10px 0; }
+      .support-layout { grid-template-columns: 1fr; }
+      .support-shot img { height: 190px; }
+      .support-metrics { min-height: 150px; }
       .control-hint { display: none; }
     }
     @media print {
@@ -174,7 +193,7 @@
 <body>
   <main class="app">
     <div class="stage" aria-label="Terraform Registry presentation">
-      <section class="slide dark title-slide active" aria-label="Slide 1 of 13" data-lead="Sanchita" data-duration="45">
+      <section class="slide dark title-slide active" aria-label="Slide 1 of 15" data-lead="Sanchita" data-duration="45">
         <svg class="title-art" viewBox="0 0 440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <defs>
             <path id="cover-design-thread" d="M130-80V100C130 220 330 210 330 320S130 420 130 540V720"></path>
@@ -206,10 +225,22 @@
             <p class="cover-byline small">Sanchita Chamberlain · Product Design<br>Val · Front-End Engineering</p>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Opening · 45 seconds</h2><p><strong>Sanchita:</strong> Open with the promise: a way of working, not an AI success formula. Introduce both presenters, what shipped, and what we’re still figuring out. Shared context, direct collaboration, and AI-assisted iteration helped us move Registry work forward.</p><p><strong>Handoff to Val:</strong> “Here’s the loop we built together.” The twelve content slides are split evenly: Sanchita leads 1, 3, 5, 6, 11, and 12; Val leads 2, 4, 7, 8, 9, and 10. Each has 7 minutes 15 seconds of planned lead time. Brief contributions from the other presenter fit inside each slide’s allocation; rehearse to keep actual speaking time balanced. Discussion is shared.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 2 of 13" data-lead="Val" data-duration="30">
+      <section class="slide tint" aria-label="Slide 2 of 15" data-lead="Shared" data-duration="45">
+        <svg class="thread-accent thread-accent-top" viewBox="0 0 220 180" aria-hidden="true"><path d="M24 0V35C24 68 180 60 180 92S24 116 24 150V180"></path><path d="M42 0V35C42 68 198 60 198 92S42 116 42 150V180"></path></svg>
+        <h2>Different ways of learning can strengthen the work.</h2>
+        <div class="content center">
+          <div class="three-up">
+            <div class="panel"><span class="pill">Different habits</span><h3>Same tools, used our own ways</h3><p class="small">We learn where an agent or workflow is useful.</p></div>
+            <div class="panel"><span class="pill">Better decisions</span><h3>Share async and live.</h3><p class="small">Plan for time zones; one meeting time won’t fit everyone.</p></div>
+            <div class="panel"><span class="pill">Customer value</span><h3>Choose what is worth building.</h3><p class="small">Make thoughtful yes/no calls with limited time.</p></div>
+          </div>
+          <p class="statement">Keep momentum toward useful outcomes—not speed for its own sake.</p>
+        </div>
+      </section>
+
+      <section class="slide dark" aria-label="Slide 3 of 15" data-lead="Val" data-duration="30">
           <div class="diagram-visual">
             <svg class="cover-loop" viewBox="0 0 540 440" role="img" aria-labelledby="cover-loop-title cover-loop-description">
               <title id="cover-loop-title">Our Design and Engineering feedback loop</title>
@@ -241,49 +272,55 @@
               <text class="loop-center" x="270" y="239" text-anchor="middle">Distinct expertise.</text>
             </svg>
           </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Our collaboration loop · 30 seconds</h2><p><strong>Val:</strong> Guide the audience around the diagram. Sanchita brings the user goal and a prototype or interaction. I explore implementation with existing code, AI, and HDS patterns. Constraints become options we evaluate together against the UX goal. Team review and checks help us refine before shipping; feedback informs the next iteration.</p><p><strong>Handoff to Sanchita:</strong> “First, the product context that makes those decisions meaningful.”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 3 of 13" data-lead="Sanchita" data-duration="75">
-        <h2>Two registries. One coherent experience.</h2>
+      <section class="slide" aria-label="Slide 4 of 15" data-lead="Sanchita" data-duration="75">
+        <h2>Discovery and publishing in the Public Registry.</h2>
         <div class="content center">
-          <div class="two-up">
-            <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Discover + publish</span></div><img src="images/Public%20Modules.png" alt="Public Registry module listing with search filters and module cards"></div>
-            <div class="screen"><div class="screen-label"><span>Private Registry</span><span class="muted">Scale + govern</span></div><img src="images/Private%20Library.png" alt="Private Registry library showing modules"></div>
+          <div class="public-registry-screen">
+            <div class="screen"><div class="screen-label"><span>Public Registry</span><span class="muted">Browse + self-service</span></div><img src="images/Public%20registry.png" alt="Public Registry home page showing the new top navigation, search, and self-service section"></div>
           </div>
-          <p class="caption small muted">Shared patterns. Distinct consumer and producer workflows.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Product context · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Public Registry supports discovery and publishing. Private Registry helps organizations scale reuse and govern artifacts. Consumers need to find and use trusted artifacts; producers need to publish and maintain them. Explain how the work clarified those distinct jobs while making the public and private experiences more consistent. The public module listing was captured from registry.terraform.io/browse/modules for this comparison.</p><p><strong>Handoff to Val:</strong> “That consistency depended on investments in an existing product, not a blank slate.”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 4 of 13" data-lead="Val" data-duration="45">
+      <section class="slide" aria-label="Slide 5 of 15" data-lead="Val" data-duration="45">
         <h2>Small investments built on each other.</h2>
         <div class="content center">
           <div class="timeline">
             <div class="timeline-item"><div class="number">01</div><h3>Make the case</h3><p class="small">UX debt → research → workshop</p></div>
-            <div class="timeline-item"><div class="number">02</div><h3>Build the foundation</h3><p class="small">Technical-debt quarter + private redesigns</p></div>
+            <div class="timeline-item"><div class="number">02</div><h3>Build the foundation</h3><p class="small">Tackle technical debt and simplify patterns</p></div>
             <div class="timeline-item"><div class="number">03</div><h3>Ship &amp; extend</h3><p class="small">Public reskin + Usage &amp; Visibility Controls</p></div>
-            <div class="timeline-item"><div class="number">04</div><h3>Keep moving</h3><p class="small">Ownership discovery + Solar preparation</p></div>
+            <div class="timeline-item"><div class="number">04</div><h3>Keep moving</h3><p class="small">Use what shipped to guide the next iteration</p></div>
           </div>
           <p class="caption small muted">Overlapping workstreams—not one sprint.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Timeline · 45 seconds</h2><p><strong>Val:</strong> Explain the technical foundation behind the delivery arc. Earlier UX debt documentation, research, and a workshop helped build the case for a technical-debt investment. Private redesigns progressed alongside roadmap work; the focused public reskin took under two weeks, not the entire partnership.</p><p>Usage and Visibility Controls have shipped; Ownership Control is in technical discovery. These streams overlap. Confirm the sequence from Engineering’s perspective and avoid dates or phases we haven’t verified. <strong>Handoff to Sanchita:</strong> “Here’s what that investment produced for the product and customers.”</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 5 of 13" data-lead="Sanchita" data-duration="90">
+      <section class="slide tint" aria-label="Slide 6 of 15" data-lead="Sanchita" data-duration="90">
         <h2>More than a reskin.</h2>
         <div class="content impact">
           <div><div class="big-stat">&lt;2</div><p class="stat-label">weeks for the focused public Registry reskin</p></div>
           <div class="facts">
             <div class="fact"><strong>Shipped</strong><p>Registry redesigns + Usage &amp; Visibility Controls</p></div>
-            <div class="fact"><strong>Customer value</strong><p>Supported a renewal, escalation resolution, and developer advocacy</p></div>
-            <div class="fact"><strong>Foundation</strong><p>Bulma removed. Preparing for Solar + dark mode.</p></div>
+            <div class="fact"><strong>User value</strong><p>Clearer paths to discover, publish, and get support</p></div>
+            <div class="fact"><strong>Foundation</strong><p>Removed a legacy CSS dependency</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Results · 1 minute 30 seconds</h2><p><strong>Sanchita:</strong> The under-two-week figure applies to the focused public reskin. Across a longer period we also shipped private-screen redesigns and Artifact Usage and Visibility Controls. Developer advocates use the controls as part of the HCP Terraform value story. The work contributed to a customer renewal and resolving escalations; don’t claim it was the sole cause.</p><p>Connect customer outcomes to product scope without attributing all delivery speed to AI. Bulma removal is complete; preparation for Project Solar and dark mode is not the same as claiming either has shipped. Val will lead the technical direction on slide 10.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 6 of 13" data-lead="Sanchita" data-duration="75">
+      <section class="slide dark support-case" aria-label="Slide 7 of 15" data-lead="Shared" data-duration="90">
+        <h2>From ticket patterns to clearer support.</h2>
+        <p class="support-subtitle">AI surfaced recurring questions; people shaped the next steps.</p>
+        <div class="content center">
+          <div class="support-layout">
+            <figure class="support-shot registry"><img src="images/public-registry-self-service-crop.png" alt="Publisher Self-Service section in the Public Registry, including a Registry Support on GitHub link"></figure>
+            <div class="support-metrics"><span class="support-metrics-label">GITHUB SUPPORT ISSUES</span><div class="support-counts"><div><strong>8</strong><span>Open</span></div><div><strong>76</strong><span>Closed</span></div></div><a href="https://github.com/hashicorp/terraform-registry-support" target="_blank" rel="noopener noreferrer">hashicorp/terraform-registry-support ↗</a><span class="support-metrics-duration">Repo created Mar 26, 2026</span></div>
+          </div>
+          <p class="support-sequence small">Ticket patterns → self-service links → engineering follow-up</p>
+        </div>
+      </section>
+
+      <section class="slide tint" aria-label="Slide 8 of 15" data-lead="Sanchita" data-duration="75">
         <h2>Bring decisions closer to the work.</h2>
         <div class="content center">
           <div class="loop">
@@ -294,10 +331,9 @@
           </div>
           <p class="statement">AI accelerates iteration. <strong>People own the judgment.</strong></p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Working loop · 1 minute 15 seconds</h2><p><strong>Sanchita:</strong> Explain what changed in your design practice: bring intent and the interaction into a shared conversation early, evaluate feasible alternatives, and stay involved through implementation. The public and private efforts used different methods; this is their common collaboration pattern, not a claim that every project followed identical steps.</p><p>Engineering tests feasibility, suggests alternatives, and reviews the implementation. AI accelerates iteration but does not decide UX or remove review and testing. <strong>Handoff to Val:</strong> “Show how that works inside your engineering environment.”</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 7 of 13" data-lead="Val" data-duration="150">
+      <section class="slide dark" aria-label="Slide 9 of 15" data-lead="Val" data-duration="150">
         <h2>Inside the AI-assisted workflow.</h2>
         <div class="content engineering">
           <div class="engineering-list">
@@ -312,10 +348,9 @@
             <p class="terminal-line"><span>03</span> Review &amp; checks</p>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Setup and workflow · 2 minutes 30 seconds</h2><p><strong>Val leads:</strong> Show your actual VS Code and GitHub Copilot setup, what context you provide, and how that context relates to existing Registry and HDS patterns. Explain the process in your own words rather than implying an unverified configuration.</p><p>Walk through a real task: the input, the first output, what you reviewed or corrected, and the checks before code was ready. A sanitized prompt, diff, or screen recording would make this tangible; choose one you’re comfortable sharing. Say what accelerated and what remained your responsibility. No invented measurements or agent discoveries.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 8 of 13" data-lead="Val" data-duration="90">
+      <section class="slide" aria-label="Slide 10 of 15" data-lead="Val" data-duration="90">
         <h2>Make it a team practice.</h2>
         <div class="content center">
           <div class="three-up">
@@ -324,10 +359,9 @@
             <div class="panel"><span class="pill">Learn</span><h3>Compare what works</h3><p class="small">Keep useful practices. Surface friction.</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Team adoption · 1 minute 30 seconds</h2><p><strong>Val leads:</strong> Explain how you helped colleagues get started with VS Code and Copilot. What did people actually adopt, what guidance or examples were useful, and what still takes work? Use a concrete team example if available.</p><p>Do not imply universal adoption or quantify a productivity increase unless you have evidence. Leave space for the team’s own experiences.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 9 of 13" data-lead="Val" data-duration="75">
+      <section class="slide tint" aria-label="Slide 11 of 15" data-lead="Val" data-duration="75">
         <h2>Make validation part of the loop.</h2>
         <div class="content center">
           <div class="three-up">
@@ -336,23 +370,21 @@
             <div class="panel"><span class="pill">Follow through</span><h3>Triage + recheck</h3><p class="small">Owners, fixes, and open risks</p></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Testing and bug bashes · 1 minute 15 seconds</h2><p><strong>Val leads:</strong> Complete this section with the team’s actual testing process. The three steps are draft framing to confirm, not a verified description of the current release process. Explain what happens before, during, and after a bug bash; who participates; and how findings feed back into implementation.</p><p>Bring one reviewed example or the reusable tracker if useful. Distinguish automated checks, manual testing, and UX review. Explain what has changed and what still needs work without inventing time savings, coverage, or defect-reduction metrics. The validation workspace later in the deck is something people can try, not evidence that every team has adopted it.</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 10 of 13" data-lead="Val" data-duration="45">
+      <section class="slide" aria-label="Slide 12 of 15" data-lead="Val" data-duration="45">
         <h2>Leave the product stronger.</h2>
         <div class="content center">
           <div class="three-up">
             <div class="panel"><span class="pill live">Shipped</span><h3>Usage + visibility</h3><p class="small">More control over Registry artifacts</p></div>
-            <div class="panel"><span class="pill discovery">Technical discovery</span><h3>Ownership Control</h3><p class="small">The next governance question</p></div>
-            <div class="panel"><span class="pill">Foundation</span><h3>Future-ready UI</h3><p class="small">Bulma removed. Solar preparation underway.</p></div>
+            <div class="panel"><span class="pill">Discovery</span><h3>Better version browsing</h3><p class="small">A dedicated versions list</p></div>
+            <div class="panel"><span class="pill">Foundation</span><h3>Simpler UI foundations</h3><p class="small">Removed a legacy CSS dependency</p></div>
           </div>
-          <p class="caption small muted">Versions list shipped. Future technical changes under discussion.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Val leads · Technical direction · 45 seconds</h2><p><strong>Val:</strong> Explain what the versions list, Bulma removal, and Solar preparation mean for the technical foundation. Add one concrete engineering decision or future technical question if useful. Usage and Visibility Controls have shipped; Ownership remains technical discovery, not a committed delivery date. Separate future requests from committed work.</p><p><strong>Handoff to Sanchita:</strong> “What should others take away from working this way?”</p></aside>
       </section>
 
-      <section class="slide" aria-label="Slide 11 of 13" data-lead="Sanchita" data-duration="90">
+      <section class="slide lessons" aria-label="Slide 13 of 15" data-lead="Sanchita" data-duration="90">
+        <svg class="thread-accent thread-accent-side" viewBox="0 0 220 180" aria-hidden="true"><path d="M24 0V35C24 68 180 60 180 92S24 116 24 150V180"></path><path d="M42 0V35C42 68 198 60 198 92S42 116 42 150V180"></path></svg>
         <h2>The loop matters. Not just the tool.</h2>
         <div class="content center">
           <div class="takeaways">
@@ -361,10 +393,9 @@
             <div class="takeaway"><b>03</b><div><h3>Keep questioning the workflow.</h3><p class="small">Still learning: context, verification, adoption</p></div></div>
           </div>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Lessons · 1 minute 30 seconds</h2><p><strong>Sanchita:</strong> Synthesize the lessons across both crafts: early context, review while decisions are flexible, and continued learning. Explain how Design stayed involved through implementation and what you changed in your own approach.</p><p>Include one honest limitation or open question from your own experience. Val can add a brief engineering counterpoint, such as context maintenance or the effort of reviewing generated output. This fits inside the slide’s allocation; keep the speaking split balanced across the talk. Do not invent a failure or measured speedup.</p></aside>
       </section>
 
-      <section class="slide tint" aria-label="Slide 12 of 13" data-lead="Sanchita" data-duration="60">
+      <section class="slide tint" aria-label="Slide 14 of 15" data-lead="Sanchita" data-duration="60">
         <h2>A validation workspace you can borrow.</h2>
         <div class="content center">
           <div class="three-up">
@@ -378,10 +409,9 @@
           </div>
           <p class="caption small muted">Drafting support—not automated product testing or release approval.</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Sanchita leads · Something to borrow · 1 minute</h2><p><strong>Sanchita:</strong> Offer the Product Validation Copilot Workspace as a reusable starting point. Its QA workflow accepts local Markdown, text, or Word PRDs/RFCs and generates draft functional scenarios and an XLSX tracker with Scenarios, Bug Tracker, Summary, and Validation sheets. Point to the synthetic example and sample workbook as an easy place to start.</p><p>Engineering must review source-derived scenarios before a live bug bash. Generating a tracker does not run product tests, establish coverage, or decide release readiness. This is a local CLI toolkit with Copilot prompts, not a hosted application; the README explains Python dependencies and the officecli requirement for Word workflows. Start with synthetic or approved inputs and review outputs before sharing. Do not imply it was used for earlier shipped work unless confirmed. Invite questions to both presenters.</p></aside>
       </section>
 
-      <section class="slide dark" aria-label="Slide 13 of 13" data-lead="Shared">
+      <section class="slide dark" aria-label="Slide 15 of 15" data-lead="Shared">
         <svg class="title-art closing-art" viewBox="0 0 440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
           <defs>
             <path id="closing-thread" d="M470 130H260C50 130 50 510 260 510H470"></path>
@@ -402,25 +432,14 @@
           <h1>What could your team<br>try together?</h1>
           <p class="discussion">Earlier context? Shared review? AI-assisted iteration?</p>
         </div>
-        <aside class="speaker-notes" hidden><h2>Shared discussion · 3–5 minutes</h2><p>Both presenters answer from their own experience. Invite questions about the product work, Val’s setup, team adoption, bug bashes, or the reusable validation workspace. Ask where others have found AI useful or frustrating and what they would need to try a shared loop.</p><p>Six content slides per presenter, with 7 minutes 15 seconds of planned lead time each: 14 minutes 30 seconds total, plus 3–5 minutes of shared discussion. Allow roughly 18–20 minutes overall. Rehearse handoffs and balance actual speaking time; a slide’s lead owns its story rather than just opening it. Shorten both presenters’ allocations proportionally for a shorter slot. Confirm the testing section with Val before presenting it as the team’s current process.</p></aside>
       </section>
     </div>
     <nav class="controls" aria-label="Presentation controls">
       <button id="previous" type="button" aria-label="Previous slide">←</button>
       <span id="counter" aria-live="polite"></span>
       <button id="next" type="button" aria-label="Next slide">→</button>
-      <button class="notes-button" id="open-notes" type="button">Presenter notes</button>
       <span class="control-hint">← → navigate · F fullscreen</span>
-      <span id="notes-status" role="status"></span>
     </nav>
-  </main>
-  <main id="presenter" aria-label="Presenter notes">
-    <div class="notes-nav">
-      <button id="notes-previous" type="button">Previous</button>
-      <button id="notes-next" type="button">Next</button>
-      <span id="notes-counter" class="notes-meta"></span>
-    </div>
-    <div id="notes-content"></div>
   </main>
   <script>
     (() => {
@@ -432,31 +451,21 @@
         label.textContent = presenterLabels[slide.dataset.lead];
         slide.append(label);
       });
-      const notesMode = new URLSearchParams(location.search).has("notes");
       const previous = document.getElementById("previous");
       const next = document.getElementById("next");
       const counter = document.getElementById("counter");
-      const notesPrevious = document.getElementById("notes-previous");
-      const notesNext = document.getElementById("notes-next");
-      const notesCounter = document.getElementById("notes-counter");
-      const notesContent = document.getElementById("notes-content");
-      const channel = typeof BroadcastChannel === "undefined" ? null : new BroadcastChannel("terraform-registry-story-draft");
-      let notesWindow = null;
       let index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.match(/slide=(\d+)/)?.[1] || 1) - 1));
 
-      function render(broadcast = true) {
+      function render() {
         slides.forEach((slide, i) => {
           slide.classList.toggle("active", i === index);
           slide.setAttribute("aria-hidden", String(i !== index));
         });
         const label = `${String(index + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
         counter.textContent = label;
-        notesCounter.textContent = label;
-        notesContent.innerHTML = slides[index].querySelector(".speaker-notes").innerHTML;
-        previous.disabled = notesPrevious.disabled = index === 0;
-        next.disabled = notesNext.disabled = index === slides.length - 1;
+        previous.disabled = index === 0;
+        next.disabled = index === slides.length - 1;
         history.replaceState(null, "", `#slide=${index + 1}`);
-        if (broadcast) channel?.postMessage({ slide: index + 1 });
       }
 
       function move(direction) {
@@ -466,24 +475,6 @@
 
       previous.addEventListener("click", () => move(-1));
       next.addEventListener("click", () => move(1));
-      notesPrevious.addEventListener("click", () => move(-1));
-      notesNext.addEventListener("click", () => move(1));
-      document.getElementById("open-notes").addEventListener("click", () => {
-        if (notesWindow && !notesWindow.closed) {
-          notesWindow.focus();
-          return;
-        }
-        const url = new URL(location.href);
-        url.searchParams.set("notes", "1");
-        url.hash = `slide=${index + 1}`;
-        notesWindow = window.open(url, "RegistryStoryPresenterNotes", "popup,width=760,height=850");
-        document.getElementById("notes-status").textContent = notesWindow ? "" : "Allow pop-ups to open presenter notes.";
-      });
-      channel?.addEventListener("message", event => {
-        if (!Number.isInteger(event.data?.slide)) return;
-        index = Math.max(0, Math.min(slides.length - 1, event.data.slide - 1));
-        render(false);
-      });
       window.addEventListener("hashchange", () => {
         index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.match(/slide=(\d+)/)?.[1] || 1) - 1));
         render();
@@ -496,12 +487,11 @@
         } else if (["ArrowLeft", "PageUp"].includes(event.key)) {
           event.preventDefault();
           move(-1);
-        } else if (event.key.toLowerCase() === "f" && !notesMode) {
+        } else if (event.key.toLowerCase() === "f") {
           if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
           else document.exitFullscreen?.();
         }
       });
-      if (notesMode) document.body.classList.add("notes-mode");
       render();
     })();
   </script>
